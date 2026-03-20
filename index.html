@@ -1,0 +1,2542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#1565C0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- KaTeX — loaded synchronously to avoid timing race -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<title>EduAI — 2026 WAEC SSCE Tutor</title>
+<style>
+:root{
+  --blue:#1565C0;--blue-mid:#1976D2;--blue-lt:#42A5F5;--blue-pale:#E3F2FD;
+  --blue-g:linear-gradient(145deg,#0D47A1 0%,#1976D2 55%,#1E88E5 100%);
+  --white:#fff;--bg:#F4F6FB;--card:#fff;
+  --text:#1A1A2E;--t2:#5A6478;--t3:#9AA3B2;--bdr:#E4E9F2;
+  --sh:0 2px 14px rgba(21,101,192,.09);--sh-lg:0 8px 32px rgba(21,101,192,.16);
+  --r:16px;--r-sm:12px;
+  --f:'Nunito',sans-serif;--fb:'Nunito Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#D0DCF0;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+#app{max-width:390px;margin:0 auto;height:100dvh;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(0,0,0,.22)}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;overflow:hidden;z-index:1}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.screen.back-out{transform:translateX(-26%);opacity:0;pointer-events:none}
+
+/* ── COMMON ── */
+.btn{font-family:var(--f);font-weight:800;font-size:15px;border:none;border-radius:14px;cursor:pointer;padding:15px 24px;width:100%;transition:all .15s;letter-spacing:.02em}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 4px 18px rgba(21,101,192,.35)}
+.btn-blue:hover{background:var(--blue-mid);transform:translateY(-1px)}
+.btn-white{background:#fff;color:var(--blue)}
+.btn-white:hover{background:#eef4ff}
+.btn-outline{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn-outline:hover{background:var(--blue-pale)}
+.btn-ghost-w{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none!important}
+.iBtn{background:var(--blue-pale);border:none;cursor:pointer;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.iBtn:hover{background:#c5dff8}
+.iBtn svg{width:18px;height:18px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.back-btn{background:var(--bg);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .15s;flex-shrink:0}
+.back-btn:hover{background:var(--bdr)}
+.back-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.page-hdr{background:var(--white);padding:13px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.page-ttl{font-family:var(--f);font-size:17px;font-weight:800;color:var(--text);flex:1}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-ttl{font-family:var(--f);font-size:16px;font-weight:800;color:var(--text)}
+.see-all{font-family:var(--f);font-size:13px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer}
+.scrollable{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scrollable::-webkit-scrollbar{display:none}
+
+/* ── STATUS PILL ── */
+.cpill{display:flex;align-items:center;gap:5px;border-radius:20px;padding:3px 10px 3px 7px;font-family:var(--f);font-size:11px;font-weight:700}
+.cpill.lp{background:rgba(255,255,255,.2);color:#fff}
+.cpill.dp{background:var(--blue-pale);color:var(--blue)}
+.cdot{width:7px;height:7px;border-radius:50%;background:#EF5350;flex-shrink:0;transition:background .4s}
+.cdot.on{background:#66BB6A}
+
+/* ── ONBOARD ── */
+#sc-onboard{background:var(--blue-g)}
+.ob-wrap{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 36px;text-align:center;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s}
+.slide.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.slide.prev{transform:translateX(-100%);opacity:0;pointer-events:none}
+.sring{width:116px;height:116px;background:rgba(255,255,255,.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:28px;border:2px solid rgba(255,255,255,.26)}
+.sring svg{width:54px;height:54px}
+.slide h2{font-family:var(--f);font-size:24px;font-weight:800;color:#fff;line-height:1.28;margin-bottom:14px}
+.slide p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.82);max-width:272px}
+.ob-dots{display:flex;justify-content:center;gap:8px;padding:14px 0;flex-shrink:0}
+.od{width:8px;height:8px;border-radius:4px;background:rgba(255,255,255,.35);transition:all .3s}
+.od.active{width:26px;background:#fff}
+.ob-foot{padding:0 24px 32px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+
+/* ── AUTH SCREEN ── */
+#sc-auth{background:#fff}
+.auth-hero{background:var(--blue-g);padding:40px 28px 50px;position:relative;overflow:hidden;flex-shrink:0}
+.auth-hero::after{content:'';position:absolute;right:-40px;bottom:-40px;width:160px;height:160px;background:rgba(255,255,255,.07);border-radius:50%}
+.auth-hero::before{content:'';position:absolute;left:-30px;top:-30px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%}
+.auth-logo{font-family:var(--f);font-size:28px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:6px;position:relative;z-index:1}
+.auth-logo span{color:rgba(255,255,255,.6);font-weight:600;font-size:14px;display:block;margin-top:2px;letter-spacing:0}
+.auth-hero-sub{font-size:13px;color:rgba(255,255,255,.75);margin-top:10px;line-height:1.5;position:relative;z-index:1}
+.auth-tabs{display:flex;background:var(--bg);margin:0 24px;border-radius:12px;padding:4px;gap:3px;flex-shrink:0;margin-top:-18px;position:relative;z-index:2;box-shadow:var(--sh)}
+.atab{flex:1;font-family:var(--f);font-size:13px;font-weight:800;background:transparent;border:none;padding:10px;border-radius:9px;cursor:pointer;color:var(--t3);transition:all .18s}
+.atab.active{background:var(--blue);color:#fff;box-shadow:0 2px 10px rgba(21,101,192,.3)}
+.auth-body{flex:1;overflow-y:auto;padding:20px 24px 32px}
+.auth-body::-webkit-scrollbar{display:none}
+.fgroup{margin-bottom:16px}
+.flabel{font-family:var(--f);font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px;display:block}
+.finput{width:100%;background:var(--bg);border:1.5px solid var(--bdr);border-radius:12px;padding:13px 16px;font-family:var(--fb);font-size:14px;color:var(--text);outline:none;transition:border-color .15s}
+.finput:focus{border-color:var(--blue);background:#fff}
+.finput::placeholder{color:var(--t3)}
+.social-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sbtn{background:var(--bg);border:1.5px solid var(--bdr);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:var(--f);font-size:12px;font-weight:700;color:var(--text);transition:all .15s}
+.sbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+.sbtn svg{width:18px;height:18px;flex-shrink:0}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;font-family:var(--f);font-size:11px;font-weight:700;color:var(--t3)}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--bdr)}
+.auth-note{font-size:12px;color:var(--t3);text-align:center;margin-top:12px;line-height:1.6}
+.auth-note a{color:var(--blue);font-weight:700;cursor:pointer;text-decoration:none}
+.auth-err{background:#FFEBEE;border:1px solid #FFCDD2;border-radius:10px;padding:10px 14px;font-size:13px;color:#C62828;font-family:var(--f);font-weight:600;margin-bottom:14px;display:none}
+.auth-err.show{display:block}
+
+/* ── HOME ── */
+#sc-home{background:var(--bg)}
+.home-hdr{background:var(--blue-g);padding:0 20px 24px;border-radius:0 0 28px 28px;color:#fff;flex-shrink:0;box-shadow:0 6px 24px rgba(13,71,161,.22)}
+.home-hdr .sb-row{padding:10px 0 6px;display:flex;align-items:center;justify-content:space-between;font-family:var(--f);font-size:12px;font-weight:800;color:rgba(255,255,255,.9)}
+.greet-row{display:flex;align-items:flex-start;justify-content:space-between;margin-top:4px}
+.greet p{font-size:13px;opacity:.8;margin-bottom:3px}
+.greet h2{font-family:var(--f);font-size:21px;font-weight:900;line-height:1.2}
+.hdr-acts{display:flex;gap:8px;margin-top:4px}
+.hdr-btn{width:38px;height:38px;background:rgba(255,255,255,.18);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.hdr-btn:hover{background:rgba(255,255,255,.28)}
+.hdr-btn svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* LIVE SEARCH */
+.search-wrap{position:relative;margin-top:14px}
+.search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#home-search{width:100%;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.25);border-radius:13px;padding:12px 14px 12px 40px;font-family:var(--fb);font-size:14px;color:#fff;outline:none;transition:background .2s}
+#home-search::placeholder{color:rgba(255,255,255,.6)}
+#home-search:focus{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.45)}
+#search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.18);z-index:100;overflow:hidden;display:none;max-height:280px;overflow-y:auto}
+#search-results.show{display:block}
+.sr-item{padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--bdr)}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover{background:var(--blue-pale)}
+.sr-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sr-ico svg{width:18px;height:18px}
+.sr-info{}
+.sr-name{font-family:var(--f);font-size:13px;font-weight:800;color:var(--text)}
+.sr-sub{font-size:11px;color:var(--t3);margin-top:1px}
+
+.home-scroll{flex:1;overflow-y:auto;padding:18px 18px 88px}
+.home-scroll::-webkit-scrollbar{display:none}
+.feat-banner{background:var(--blue-g);border-radius:var(--r);padding:18px;margin-bottom:22px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh-lg);cursor:pointer;position:relative;overflow:hidden}
+.feat-banner::after{content:'';position:absolute;right:-20px;top:-20px;width:100px;height:100px;background:rgba(255,255,255,.07);border-radius:50%}
+.feat-ico{width:52px;height:52px;background:rgba(255,255,255,.18);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.24)}
+.feat-ico svg{width:26px;height:26px}
+.feat-txt h3{font-family:var(--f);font-size:15px;font-weight:800;color:#fff;margin-bottom:3px}
+.feat-txt p{font-size:12px;color:rgba(255,255,255,.78);line-height:1.45}
+.feat-badge{position:absolute;top:11px;right:11px;background:rgba(255,255,255,.22);color:#fff;font-family:var(--f);font-size:9px;font-weight:800;padding:3px 8px;border-radius:5px}
+.topics-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px}
+.topics-row::-webkit-scrollbar{display:none}
+.tchip{flex-shrink:0;background:var(--card);border:1.5px solid var(--bdr);border-radius:20px;padding:7px 14px;font-family:var(--f);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tchip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.tchip:hover:not(.active){border-color:var(--blue-lt);color:var(--blue)}
+.home-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:22px}
+.home-scard{background:var(--card);border-radius:var(--r);padding:16px 14px 18px;cursor:pointer;box-shadow:var(--sh);transition:all .2s;border:2px solid transparent;position:relative;overflow:hidden}
+.home-scard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--sc,var(--blue));border-radius:0 0 14px 14px}
+.home-scard:hover{transform:translateY(-2px);box-shadow:var(--sh-lg)}
+.home-scard-name{font-family:var(--f);font-size:13px;font-weight:800;color:var(--text);margin:10px 0 2px}
+.home-scard-sub{font-size:11px;color:var(--t3);font-weight:600}
+.cached-dot{position:absolute;top:10px;right:10px;background:#E8F5E9;color:#388E3C;font-family:var(--f);font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px}
+.ccard{background:var(--card);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh);cursor:pointer;margin-bottom:10px;transition:transform .15s;border:1px solid var(--bdr)}
+.ccard:hover{transform:translateX(3px)}
+.ccard-info{flex:1}
+.ccard-name{font-family:var(--f);font-size:14px;font-weight:800;color:var(--text)}
+.ccard-sub{font-size:12px;color:var(--t3);margin-top:1px}
+.pbar{height:4px;background:var(--bdr);border-radius:3px;margin-top:7px;overflow:hidden}
+.pfill{height:100%;background:var(--blue);border-radius:3px}
+.pct{font-family:var(--f);font-size:10px;font-weight:700;color:var(--blue);margin-top:3px}
+
+/* ── BOTTOM NAV ── */
+#bnav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bdr);display:flex;padding:8px 0 16px;z-index:50;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+#bnav.hidden{display:none}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 0;font-family:var(--f);font-size:10px;font-weight:700;color:var(--t3);background:none;border:none;transition:color .15s}
+.ni.active{color:var(--blue)}
+.ni svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+.ni.active svg{transform:scale(1.1)}
+.nfab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;cursor:pointer;background:none;border:none;font-family:var(--f);font-size:10px;font-weight:700;color:var(--t3)}
+.nfab-i{width:48px;height:48px;background:var(--blue);border-radius:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(21,101,192,.4);margin-top:-16px;transition:transform .15s}
+.nfab-i svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nfab:hover .nfab-i{transform:scale(1.05)}
+
+/* ── SUBJECT PICKER ── */
+#sc-subjects{}
+.mode-toggle{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:2px}
+.mbtn{font-family:var(--f);font-size:11px;font-weight:800;background:transparent;border:none;color:var(--t3);padding:6px 11px;border-radius:8px;cursor:pointer;transition:all .15s}
+.mbtn.active{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(21,101,192,.28)}
+.stgrid{flex:1;overflow-y:auto;padding:14px 14px 100px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start}
+.stgrid::-webkit-scrollbar{display:none}
+.stile{background:var(--card);border-radius:var(--r-sm);padding:15px 8px;cursor:pointer;text-align:center;border:2px solid var(--bdr);transition:all .2s}
+.stile:hover,.stile.sel{border-color:var(--blue);background:var(--blue-pale)}
+.tile-ico{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 9px}
+.tile-ico svg{width:24px;height:24px}
+.stile-name{font-family:var(--f);font-size:11px;font-weight:700;color:var(--text);line-height:1.3}
+.subj-footer{position:absolute;bottom:0;left:0;right:0;background:#fff;padding:14px 18px 26px;border-top:1px solid var(--bdr);box-shadow:0 -4px 24px rgba(0,0,0,.06)}
+
+/* ── CURRICULUM SCREEN ── */
+#sc-curriculum{}
+.curr-search-wrap{padding:12px 16px;background:#fff;border-bottom:1px solid var(--bdr);flex-shrink:0;position:relative}
+.curr-search-wrap svg{position:absolute;left:28px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#curr-search{width:100%;background:var(--bg);border:1.5px solid var(--bdr);border-radius:11px;padding:10px 12px 10px 36px;font-family:var(--fb);font-size:14px;color:var(--text);outline:none;transition:border-color .15s}
+#curr-search:focus{border-color:var(--blue);background:#fff}
+#curr-search::placeholder{color:var(--t3)}
+.curr-scroll{flex:1;overflow-y:auto;padding:12px 14px 80px}
+.curr-scroll::-webkit-scrollbar{display:none}
+.curr-subj-section{margin-bottom:20px}
+.curr-subj-hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border-radius:var(--r-sm);cursor:pointer;border:1.5px solid var(--bdr);transition:all .15s;margin-bottom:4px}
+.curr-subj-hdr:hover{border-color:var(--blue);background:var(--blue-pale)}
+.curr-subj-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.curr-subj-ico svg{width:18px;height:18px}
+.curr-subj-name{font-family:var(--f);font-size:14px;font-weight:800;color:var(--text);flex:1}
+.curr-subj-count{font-size:11px;color:var(--t3);font-family:var(--f);font-weight:700}
+.curr-chevron{width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;flex-shrink:0}
+.curr-subj-section.open .curr-chevron{transform:rotate(90deg)}
+.curr-topics{display:none;padding:4px 0 0 46px;flex-direction:column;gap:4px}
+.curr-subj-section.open .curr-topics{display:flex}
+.curr-topic-item{background:var(--bg);border-radius:9px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;border:1px solid transparent}
+.curr-topic-item:hover{background:var(--blue-pale);border-color:var(--blue-lt)}
+.topic-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;opacity:.5}
+.curr-topic-item:hover .topic-dot{opacity:1}
+.topic-name{font-family:var(--fb);font-size:13px;color:var(--text);flex:1}
+.topic-ask{font-family:var(--f);font-size:10px;font-weight:800;color:var(--blue);background:var(--blue-pale);padding:3px 8px;border-radius:5px;white-space:nowrap;opacity:0;transition:opacity .15s}
+.curr-topic-item:hover .topic-ask{opacity:1}
+
+/* ── HISTORY SCREEN ── */
+#sc-history{}
+.hist-scroll{flex:1;overflow-y:auto;padding:12px 14px 80px}
+.hist-scroll::-webkit-scrollbar{display:none}
+.hist-empty{text-align:center;padding:60px 24px}
+.hist-empty svg{width:64px;height:64px;stroke:var(--t3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin:0 auto 16px;display:block}
+.hist-empty h3{font-family:var(--f);font-size:17px;font-weight:800;color:var(--t2);margin-bottom:8px}
+.hist-empty p{font-size:13px;color:var(--t3);line-height:1.6}
+.hist-day-label{font-family:var(--f);font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;padding:6px 4px 8px;margin-top:8px}
+.hist-session{background:var(--card);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh);transition:all .18s;border:1.5px solid transparent;display:flex;align-items:flex-start;gap:12px}
+.hist-session:hover{border-color:var(--blue);transform:translateX(2px)}
+.hist-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hist-ico svg{width:20px;height:20px}
+.hist-info{flex:1;min-width:0}
+.hist-subj{font-family:var(--f);font-size:13px;font-weight:800;color:var(--text)}
+.hist-preview{font-size:12px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{display:flex;align-items:center;gap:8px;margin-top:5px}
+.hist-time{font-family:var(--f);font-size:10px;font-weight:700;color:var(--t3)}
+.hist-cnt{background:var(--blue-pale);color:var(--blue);font-family:var(--f);font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px}
+.hist-session-del{background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--t3);transition:color .15s;flex-shrink:0}
+.hist-session-del:hover{color:#EF5350}
+.hist-session-del svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── CHAT ── */
+#sc-chat{}
+.chat-hdr{background:#fff;padding:12px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--bdr);box-shadow:0 2px 8px rgba(0,0,0,.04);flex-shrink:0}
+.chat-av{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-av svg{width:22px;height:22px}
+.chat-info{flex:1}
+.chat-name{font-family:var(--f);font-size:15px;font-weight:800;color:var(--text)}
+.chat-st-row{display:flex;align-items:center;gap:6px;margin-top:1px;flex-wrap:wrap}
+.chat-sdot{width:7px;height:7px;border-radius:50%;background:#EF5350;flex-shrink:0;transition:background .4s}
+.chat-sdot.on{background:#66BB6A}
+.chat-st{font-size:11px;color:var(--t3);font-weight:600}
+.sms-badge{background:#FFF3E0;color:#E65100;font-family:var(--f);font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;display:none}
+.sms-badge.show{display:inline-block}
+#oq{background:#FFF8E1;border-bottom:1px solid #FFE082;padding:8px 14px;display:flex;align-items:center;gap:10px;font-family:var(--f);font-size:12px;font-weight:700;color:#E65100;flex-shrink:0}
+#oq.hidden{display:none}
+#oq svg{width:15px;height:15px;stroke:#E65100;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+#qcnt{background:#FF6D00;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:13px}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
+.mrow{display:flex;gap:8px;align-items:flex-end;animation:popIn .2s ease}
+@keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.mrow.user{flex-direction:row-reverse}
+.mav{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.mav.ai-a{background:var(--blue-pale)}
+.mav.ai-a svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mav.usr-a{background:var(--blue);color:#fff;font-family:var(--f);font-size:12px;font-weight:800}
+.mcont{max-width:80%;display:flex;flex-direction:column;gap:3px}
+.mrow.user .mcont{align-items:flex-end}
+.bub{padding:10px 13px;border-radius:17px;font-size:14px;line-height:1.65;color:var(--text)}
+.bub.ai-b{background:var(--card);border-bottom-left-radius:5px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.bub.usr-b{background:var(--blue);color:#fff;border-bottom-right-radius:5px;font-size:14px}
+.mtime{font-size:10px;color:var(--t3);font-family:var(--f);font-weight:600;padding:0 3px}
+.ctag{background:#E8F5E9;color:#2E7D32;font-family:var(--f);font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;display:inline-block}
+.qtag{background:#FFF3E0;color:#E65100;font-family:var(--f);font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;display:inline-block}
+
+/* ── KATEX MATH RENDERING ── */
+.math-block{background:#F0F5FF;border:1.5px solid #C5D8F8;border-radius:11px;padding:13px 16px;margin:9px 0;overflow-x:auto;text-align:center}
+.math-block .katex-display{margin:0!important}
+.math-inline .katex{font-size:1em}
+.bub.ai-b .katex{font-size:1.05em}
+.step-wrap{background:#F8FAFF;border-radius:9px;padding:9px 11px;margin:7px 0;border-left:3px solid var(--blue)}
+.step-lbl{display:inline-block;background:var(--blue);color:#fff;font-family:var(--f);font-size:10px;font-weight:800;padding:2px 8px;border-radius:5px;margin-bottom:4px}
+.step-body{font-size:13.5px;line-height:1.7;color:var(--text)}
+
+/* ── MARKDOWN RENDERER STYLES ── */
+.bub.ai-b{max-width:100%;overflow-x:hidden}
+/* Paragraphs */
+.md-p{margin:4px 0;line-height:1.7;font-size:14px}
+.md-gap{height:7px}
+/* Headings */
+.md-h3{font-family:var(--f);font-size:15px;font-weight:800;color:var(--text);margin:12px 0 5px;border-bottom:2px solid var(--blue-pale);padding-bottom:4px}
+.md-h4{font-family:var(--f);font-size:14px;font-weight:800;color:var(--blue);margin:10px 0 4px}
+.md-h5{font-family:var(--f);font-size:13px;font-weight:700;color:var(--t2);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.04em}
+/* Horizontal rule */
+.md-hr{border:none;border-top:1.5px solid var(--bdr);margin:10px 0}
+/* Lists */
+.md-ul,.md-ol{margin:6px 0 6px 18px;padding:0;font-size:14px;line-height:1.7}
+.md-ul li{list-style:disc;margin-bottom:2px}
+.md-ol li{list-style:decimal;margin-bottom:2px}
+/* Inline code */
+.md-code{background:#EEF2FF;padding:1px 5px;border-radius:5px;font-family:monospace;font-size:12px;color:#3730a3;border:1px solid #E0E7FF}
+/* Pre / code block */
+.md-pre{background:#1A1A2E;border-radius:10px;padding:12px 14px;margin:8px 0;overflow-x:auto;font-family:monospace;font-size:12px;color:#E8EAFF;line-height:1.6;border:1px solid #2A2A4A}
+.md-pre code{background:transparent;color:inherit;font-size:inherit;padding:0;border:none}
+/* TABLE — the big fix */
+.md-table-wrap{overflow-x:auto;margin:10px 0;border-radius:10px;border:1.5px solid var(--bdr);box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.md-table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:280px}
+.md-table thead{background:var(--blue);color:#fff}
+.md-table thead th{padding:9px 12px;font-family:var(--f);font-weight:800;text-align:left;font-size:12px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.15)}
+.md-table thead th:last-child{border-right:none}
+.md-table tbody tr:nth-child(odd){background:#F8FAFF}
+.md-table tbody tr:nth-child(even){background:#fff}
+.md-table tbody tr:hover{background:var(--blue-pale)}
+.md-table tbody td{padding:8px 12px;border-bottom:1px solid var(--bdr);border-right:1px solid var(--bdr);line-height:1.5;color:var(--text)}
+.md-table tbody td:last-child{border-right:none}
+.md-table tbody tr:last-child td{border-bottom:none}
+/* Typing indicator */
+.trow{display:flex;gap:8px;align-items:flex-end}
+.tbub{background:var(--card);border-radius:17px 17px 17px 5px;padding:12px 15px;display:flex;gap:4px;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.td{width:7px;height:7px;border-radius:50%;background:var(--blue-lt);animation:td 1.2s ease-in-out infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{opacity:.3;transform:scale(.7)}30%{opacity:1;transform:scale(1)}}
+/* Quick chips */
+.qchips{padding:7px 14px 4px;display:flex;gap:7px;overflow-x:auto;flex-shrink:0}
+.qchips::-webkit-scrollbar{display:none}
+.qc{flex-shrink:0;background:var(--card);border:1.5px solid var(--bdr);border-radius:20px;padding:7px 13px;font-family:var(--f);font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;white-space:nowrap;transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.qc:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* Input */
+.iarea{background:#fff;border-top:1px solid var(--bdr);padding:9px 11px 18px;flex-shrink:0}
+.irow{display:flex;gap:8px;align-items:flex-end}
+#qi{flex:1;background:var(--bg);border:1.5px solid var(--bdr);border-radius:13px;padding:10px 13px;font-family:var(--fb);font-size:14px;color:var(--text);outline:none;resize:none;min-height:42px;max-height:108px;line-height:1.5;transition:border-color .15s}
+#qi:focus{border-color:var(--blue);background:#fff}
+#qi::placeholder{color:var(--t3)}
+#sbtn{width:42px;height:42px;background:var(--blue);border:none;border-radius:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(21,101,192,.32);transition:all .15s;flex-shrink:0}
+#sbtn:hover{background:var(--blue-mid);transform:scale(1.05)}
+#sbtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+#sbtn svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.dhint{text-align:center;font-family:var(--f);font-size:10px;color:var(--t3);font-weight:600;margin-top:5px}
+
+/* ── ACCOUNT SCREEN ── */
+#sc-account{background:var(--bg)}
+.acct-hdr{background:var(--blue-g);padding:20px 20px 32px;color:#fff;flex-shrink:0;border-radius:0 0 28px 28px;box-shadow:0 6px 24px rgba(13,71,161,.22)}
+.acct-hdr .page-hdr{background:transparent;border:none;padding:10px 0 14px}
+.acct-hdr .page-ttl{color:#fff;font-size:18px}
+.acct-hdr .back-btn{background:rgba(255,255,255,.18)}
+.acct-hdr .back-btn svg{stroke:#fff}
+.acct-avatar-wrap{display:flex;justify-content:center}
+.acct-avatar{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-family:var(--f);font-size:28px;font-weight:900;color:#fff;cursor:pointer;position:relative}
+.acct-avatar svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acct-name{font-family:var(--f);font-size:18px;font-weight:800;color:#fff;text-align:center;margin-top:10px}
+.acct-email{font-size:13px;color:rgba(255,255,255,.72);text-align:center;margin-top:2px}
+.acct-stats{display:flex;gap:0;margin-top:14px;background:rgba(255,255,255,.12);border-radius:12px;overflow:hidden}
+.acct-stat{flex:1;padding:10px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.15)}
+.acct-stat:last-child{border-right:none}
+.acct-stat-n{font-family:var(--f);font-size:20px;font-weight:900;color:#fff}
+.acct-stat-l{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px}
+.acct-scroll{flex:1;overflow-y:auto;padding:16px 16px 80px}
+.acct-scroll::-webkit-scrollbar{display:none}
+.acct-section-ttl{font-family:var(--f);font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px 4px}
+.acct-row{background:var(--card);border-radius:var(--r-sm);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:2px;transition:all .15s;border:1px solid var(--bdr)}
+.acct-row:first-of-type{border-radius:var(--r-sm) var(--r-sm) 4px 4px}
+.acct-row:last-of-type{border-radius:4px 4px var(--r-sm) var(--r-sm);margin-bottom:0}
+.acct-row:only-of-type{border-radius:var(--r-sm)}
+.acct-row:hover{background:var(--blue-pale);border-color:var(--blue-lt)}
+.acct-row-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acct-row-ico svg{width:18px;height:18px;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acct-row-info{flex:1}
+.acct-row-name{font-family:var(--f);font-size:14px;font-weight:700;color:var(--text)}
+.acct-row-sub{font-size:12px;color:var(--t3);margin-top:1px}
+.acct-row-arrow{color:var(--t3)}
+.acct-row-arrow svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.logout-btn{background:#FFEBEE;border:none;width:100%;padding:14px;border-radius:12px;font-family:var(--f);font-size:14px;font-weight:800;color:#C62828;cursor:pointer;margin-top:16px;transition:background .15s}
+.logout-btn:hover{background:#FFCDD2}
+
+
+/* ── QUIZ STYLES ── */
+.quiz-card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh);border:2px solid var(--bdr)}
+.quiz-card.answered{border-color:var(--bdr)}
+.quiz-q-num{font-family:var(--f);font-size:11px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.quiz-q-text{font-family:var(--fb);font-size:14px;line-height:1.6;color:var(--text);margin-bottom:12px;font-weight:600}
+.quiz-opts{display:flex;flex-direction:column;gap:7px}
+.quiz-opt{background:var(--bg);border:1.5px solid var(--bdr);border-radius:10px;padding:10px 13px;font-family:var(--fb);font-size:13px;color:var(--text);cursor:pointer;transition:all .15s;text-align:left}
+.quiz-opt:hover:not(.locked){border-color:var(--blue-lt);background:var(--blue-pale);color:var(--blue)}
+.quiz-opt.correct{background:#E8F5E9;border-color:#4CAF50;color:#1B5E20}
+.quiz-opt.wrong{background:#FFEBEE;border-color:#EF5350;color:#C62828}
+.quiz-opt.reveal{background:#E3F2FD;border-color:var(--blue);color:var(--blue)}
+.quiz-opt.locked{cursor:not-allowed;opacity:.7}
+.quiz-exp{background:#F8FAFF;border-radius:9px;padding:10px 13px;margin-top:9px;font-size:13px;color:var(--t2);line-height:1.6;border-left:3px solid var(--blue);display:none}
+.quiz-exp.show{display:block}
+.quiz-exp strong{color:var(--blue)}
+.quiz-result-banner{background:var(--blue-g);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:16px;color:#fff}
+.quiz-result-banner h2{font-family:var(--f);font-size:28px;font-weight:900;margin-bottom:4px}
+.quiz-result-banner p{font-size:13px;opacity:.85}
+.quiz-start{text-align:center;padding:32px 20px}
+.quiz-start svg{width:64px;height:64px;stroke:var(--blue);fill:none;stroke-width:1.5;stroke-linecap:round;margin:0 auto 16px;display:block}
+.quiz-start h3{font-family:var(--f);font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+.quiz-start p{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px}
+.quiz-timer{font-family:var(--f);font-size:13px;font-weight:800;color:var(--blue);background:var(--blue-pale);padding:4px 12px;border-radius:20px;display:inline-block}
+.quiz-timer.urgent{color:#C62828;background:#FFEBEE}
+/* ── DASHBOARD STYLES ── */
+.kpi-card{background:var(--card);border-radius:var(--r-sm);padding:16px;box-shadow:var(--sh);border-left:4px solid var(--blue);text-align:center}
+.kpi-n{font-family:var(--f);font-size:28px;font-weight:900;color:var(--blue);line-height:1}
+.kpi-l{font-size:11px;color:var(--t2);margin-top:4px;font-weight:600;font-family:var(--f)}
+.subj-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.subj-bar-name{font-family:var(--f);font-size:12px;font-weight:700;color:var(--text);width:90px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.subj-bar-track{flex:1;background:var(--bdr);border-radius:4px;height:8px;overflow:hidden}
+.subj-bar-fill{height:100%;border-radius:4px;background:var(--blue);transition:width .8s ease}
+.subj-bar-cnt{font-family:var(--f);font-size:11px;font-weight:700;color:var(--t3);width:28px;text-align:right;flex-shrink:0}
+.act-bar{display:flex;align-items:flex-end;gap:4px;height:60px}
+.act-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.act-bar-fill{width:100%;border-radius:4px 4px 0 0;background:var(--blue);min-height:3px;transition:height .6s ease}
+.act-bar-label{font-family:var(--f);font-size:10px;color:var(--t3);font-weight:700}
+
+/* ── API KEY BANNER ── */
+#api-banner{background:#FFF8E1;border-bottom:2px solid #FFD54F;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:60;position:relative}
+#api-banner.hidden{display:none}
+#api-banner svg{width:18px;height:18px;stroke:#E65100;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.api-banner-txt{flex:1;font-family:var(--f);font-size:12px;font-weight:700;color:#5D4037}
+.api-banner-txt span{display:block;font-size:11px;font-weight:600;color:#8D6E63;margin-top:1px}
+#api-key-input{background:#fff;border:1.5px solid #FFD54F;border-radius:9px;padding:7px 10px;font-family:var(--fb);font-size:12px;color:var(--text);outline:none;width:170px;flex-shrink:0}
+#api-key-input:focus{border-color:#E65100}
+.api-save-btn{background:#E65100;color:#fff;border:none;border-radius:9px;padding:7px 13px;font-family:var(--f);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
+
+/* ── SETTINGS SCREEN ── */
+#sc-settings{}
+.sett-section{margin-bottom:4px}
+.sett-section-ttl{font-family:var(--f);font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;padding:14px 4px 7px}
+.sett-row{background:var(--card);border-radius:0;padding:14px 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--bdr)}
+.sett-row:first-of-type{border-radius:var(--r-sm) var(--r-sm) 0 0}
+.sett-row:last-of-type{border-radius:0 0 var(--r-sm) var(--r-sm);border-bottom:none}
+.sett-row:only-of-type{border-radius:var(--r-sm);border-bottom:none}
+.sett-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sett-ico svg{width:18px;height:18px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sett-info{flex:1}
+.sett-name{font-family:var(--f);font-size:14px;font-weight:700;color:var(--text)}
+.sett-sub{font-size:12px;color:var(--t3);margin-top:1px}
+/* Toggle switch */
+.toggle{width:46px;height:26px;background:var(--bdr);border-radius:13px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;padding:0}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.toggle.on::after{transform:translateX(20px)}
+/* Theme picker */
+.theme-row{display:flex;gap:8px;margin-top:8px}
+.theme-opt{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s;position:relative}
+.theme-opt.active{border-color:var(--blue)}
+.theme-opt::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:900;opacity:0}
+.theme-opt.active::after{opacity:1}
+/* Font size slider */
+.font-slider{width:100%;margin-top:8px;accent-color:var(--blue)}
+/* API key field in settings */
+.api-field{display:flex;gap:8px;margin-top:8px}
+.api-field input{flex:1;background:var(--bg);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 12px;font-family:var(--fb);font-size:13px;color:var(--text);outline:none}
+.api-field input:focus{border-color:var(--blue);background:#fff}
+.api-field button{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-family:var(--f);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+
+/* ── DARK THEME ── */
+body.dark{background:#0A0F1E}
+body.dark #app{background:#111827}
+body.dark .screen{background:#111827}
+body.dark .bub.ai-b,.dark .home-scard,.dark .ccard,.dark .stile,.dark .curr-subj-hdr,.dark .curr-topic-item,
+body.dark .hist-session,.dark .quiz-card,.dark .kpi-card,.dark .sett-row,.dark .acct-row,.dark .fgroup .finput{background:#1F2937;border-color:#374151}
+body.dark .page-hdr,.dark .chat-hdr,.dark #bnav,.dark .iarea,.dark .subj-footer,.dark .auth-tabs{background:#1F2937;border-color:#374151}
+body.dark .md-table tbody tr:nth-child(odd){background:#1a2433}
+body.dark .md-table tbody tr:nth-child(even){background:#1F2937}
+body.dark .md-table thead{background:#0D47A1}
+body.dark .sec-ttl,.dark .page-ttl,.dark .chat-name,.dark .ccard-name,.dark .stile-name,
+body.dark .sett-name,.dark .acct-row-name,.dark .hist-subj,.dark .quiz-q-text{color:#F9FAFB}
+body.dark .greet h2,.dark .auth-logo{color:#F9FAFB}
+body.dark .md-p,.dark .step-body,.dark .topic-name,.dark .curr-subj-name{color:#E5E7EB}
+body.dark .md-pre{background:#0F172A;border-color:#1E293B}
+body.dark #qi,.dark #curr-search,.dark #home-search{background:#1F2937;border-color:#374151;color:#F9FAFB}
+body.dark #qi::placeholder,.dark #curr-search::placeholder,.dark #home-search::placeholder{color:#6B7280}
+body.dark .qc,.dark .tchip{background:#1F2937;border-color:#374151;color:#9CA3AF}
+body.dark .tchip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+body.dark #search-results{background:#1F2937}
+body.dark .sr-item{border-color:#374151}
+body.dark .sr-item:hover{background:#374151}
+body.dark .sr-name{color:#F9FAFB}
+body.dark .pbar,.dark .subj-bar-track{background:#374151}
+body.dark .act-bar-fill{background:#3B82F6}
+body.dark .subj-bar-fill{background:#3B82F6}
+body.dark .md-table-wrap{border-color:#374151}
+body.dark .md-table tbody td{border-color:#374151}
+body.dark .math-block{background:#1E293B;border-color:#334155}
+body.dark .step-wrap{background:#1E2A3A}
+body.dark #oq{background:#1E1A00;border-color:#4A3800}
+body.dark .home-hdr,.dark .acct-hdr,.dark #sc-onboard,.dark #sc-auth .auth-hero{background:linear-gradient(145deg,#0A1628 0%,#0F2044 55%,#122855 100%)}
+body.dark .auth-body,.dark #sc-auth{background:#111827}
+body.dark .finput{background:#1F2937!important;border-color:#374151!important;color:#F9FAFB!important}
+body.dark .sbtn{background:#1F2937;border-color:#374151;color:#9CA3AF}
+body.dark .home-scroll,.dark .scrollable,.dark .hist-scroll,.dark .curr-scroll,.dark .stgrid,.dark .auth-body,.dark .acct-scroll{background:#111827}
+body.dark --bdr:#374151;
+/* ── TOAST ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:#1A1A2E;color:#fff;font-family:var(--f);font-size:13px;font-weight:700;padding:10px 18px;border-radius:25px;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── SVG DEFS hidden ── */
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- hidden SVG symbols -->
+<svg style="display:none">
+<defs>
+<symbol id="ico-math" viewBox="0 0 28 28" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="7" y1="7" x2="11" y2="7"/><line x1="9" y1="5" x2="9" y2="9"/>
+  <line x1="17" y1="7" x2="21" y2="7"/>
+  <line x1="7" y1="14" x2="11" y2="14"/>
+  <rect x="16.5" y="12" width="5" height="5" rx="1" fill="currentColor" stroke="none"/>
+  <line x1="7" y1="21" x2="11" y2="21"/>
+  <line x1="17" y1="19" x2="21" y2="23"/><line x1="21" y1="19" x2="17" y2="23"/>
+</symbol>
+<symbol id="ico-physics" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round">
+  <circle cx="14" cy="14" r="2.5" fill="currentColor" stroke="none"/>
+  <ellipse cx="14" cy="14" rx="10" ry="4"/>
+  <ellipse cx="14" cy="14" rx="10" ry="4" transform="rotate(60 14 14)"/>
+  <ellipse cx="14" cy="14" rx="10" ry="4" transform="rotate(120 14 14)"/>
+</symbol>
+<symbol id="ico-english" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 5C14 5 8 3 4 5V23C8 21 14 23 14 23C14 23 20 21 24 23V5C20 3 14 5 14 5Z"/>
+  <line x1="14" y1="5" x2="14" y2="23"/>
+  <line x1="7" y1="9" x2="11" y2="8"/><line x1="7" y1="13" x2="11" y2="12"/><line x1="7" y1="17" x2="11" y2="16"/>
+</symbol>
+<symbol id="ico-bio" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 24 Q14 14 22 6 Q22 6 14 4 Q6 6 6 14 Q6 20 14 24Z"/>
+  <path d="M14 24 Q10 18 10 12"/>
+</symbol>
+<symbol id="ico-chem" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M10 4V13L5 21C5 22 6 23 7 23H21C22 23 23 22 23 21L18 13V4"/>
+  <line x1="9" y1="4" x2="19" y2="4"/>
+  <circle cx="10" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+  <circle cx="15" cy="20" r="1" fill="currentColor" stroke="none"/>
+</symbol>
+<symbol id="ico-econ" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <polyline points="3,22 9,14 14,18 20,10 25,12"/>
+  <line x1="3" y1="22" x2="25" y2="22"/>
+</symbol>
+<symbol id="ico-govt" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="13" width="22" height="11" rx="1"/>
+  <polygon points="14,3 3,13 25,13"/>
+  <line x1="7" y1="13" x2="7" y2="24"/><line x1="14" y1="13" x2="14" y2="24"/><line x1="21" y1="13" x2="21" y2="24"/>
+</symbol>
+<symbol id="ico-lit" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 4h8c2 0 2 2 2 2v16s0-2-2-2H4V4z"/>
+  <path d="M24 4h-8c-2 0-2 2-2 2v16s0-2 2-2h8V4z"/>
+</symbol>
+<symbol id="ico-geo" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="14" cy="14" r="10"/>
+  <path d="M4 14h20M14 4c-4 4-4 12 0 20M14 4c4 4 4 12 0 20"/>
+  <path d="M5 9h18M5 19h18"/>
+</symbol>
+<symbol id="ico-agric" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 22V12C14 8 18 4 22 4C22 10 18 14 14 14"/>
+  <path d="M14 14C14 10 10 6 6 6C6 10 9 13 14 14"/>
+  <line x1="14" y1="22" x2="14" y2="16"/>
+</symbol>
+<symbol id="ico-acct" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="5" width="22" height="18" rx="2"/>
+  <line x1="3" y1="10" x2="25" y2="10"/>
+  <line x1="8" y1="15" x2="13" y2="15"/><line x1="15" y1="15" x2="20" y2="15"/>
+  <line x1="8" y1="19" x2="13" y2="19"/><line x1="15" y1="19" x2="20" y2="19"/>
+</symbol>
+<symbol id="ico-comm" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5 8h18v12H5z" rx="2"/>
+  <path d="M5 8l9 7 9-7"/>
+  <line x1="14" y1="3" x2="14" y2="8"/>
+</symbol>
+<symbol id="ico-crs" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="14" y1="3" x2="14" y2="25"/>
+  <line x1="7" y1="9" x2="21" y2="9"/>
+</symbol>
+<symbol id="ico-ict" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="5" width="22" height="15" rx="2"/>
+  <line x1="9" y1="24" x2="19" y2="24"/>
+  <line x1="14" y1="20" x2="14" y2="24"/>
+  <polyline points="8,14 11,11 14,14 17,9 20,12"/>
+</symbol>
+<symbol id="ico-health" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 22c-6-4-10-8-10-12a6 6 0 0 1 10-4.5A6 6 0 0 1 24 10c0 4-4 8-10 12z"/>
+</symbol>
+<symbol id="ico-french" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="5" y="6" width="18" height="16" rx="2"/>
+  <line x1="5" y1="6" x2="5" y2="22"/><rect x="5" y="6" width="6" height="16" fill="currentColor" opacity=".25" stroke="none"/>
+  <rect x="17" y="6" width="6" height="16" fill="currentColor" opacity=".25" stroke="none"/>
+</symbol>
+<symbol id="ico-lang" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="14" cy="14" r="10"/>
+  <path d="M14 4c-3 4-3 12 0 20M14 4c3 4 3 12 0 20"/>
+  <line x1="4" y1="10" x2="24" y2="10"/><line x1="4" y1="18" x2="24" y2="18"/>
+</symbol>
+<symbol id="ico-hist" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="14" cy="14" r="10"/>
+  <polyline points="14 8 14 14 18 16"/>
+  <path d="M4 14H2M26 14h-2M14 2v2M14 24v2"/>
+</symbol>
+<symbol id="ico-irs" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 3 L16 9 L22 9 L17 13 L19 19 L14 15 L9 19 L11 13 L6 9 L12 9 Z"/>
+  <circle cx="14" cy="22" r="2"/>
+</symbol>
+<symbol id="ico-td" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="4" y="4" width="20" height="20" rx="1"/>
+  <line x1="4" y1="10" x2="24" y2="10"/>
+  <line x1="10" y1="10" x2="10" y2="24"/>
+  <line x1="14" y1="14" x2="20" y2="20"/><line x1="20" y1="14" x2="14" y2="20"/>
+</symbol>
+<symbol id="ico-phe" viewBox="0 0 28 28" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="14" cy="6" r="2.5"/>
+  <path d="M9 12 Q14 10 19 12 L21 18 L17 17 L16 24 L14 22 L12 24 L11 17 L7 18 Z"/>
+</symbol>
+</defs>
+</svg>
+
+<!-- ══ ONBOARDING ══ -->
+<div class="screen" id="sc-onboard" style="background:var(--blue-g)">
+  <div style="padding:10px 20px 4px;display:flex;align-items:center;justify-content:space-between;font-family:var(--f);font-size:12px;font-weight:800;color:rgba(255,255,255,.9)">
+    <span>9:41</span>
+    <div class="cpill lp"><div class="cdot" id="od"></div><span id="ol">Offline</span></div>
+    <span>▐▐▐</span>
+  </div>
+  <div class="ob-wrap">
+    <div class="slide" id="sl0">
+      <div class="sring"><svg viewBox="0 0 56 56" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 12C28 12 18 8 8 10V44C18 42 28 46 28 46C28 46 38 42 48 44V10C38 8 28 12 28 12Z"/><line x1="28" y1="12" x2="28" y2="46"/><line x1="14" y1="18" x2="22" y2="17"/><line x1="14" y1="25" x2="22" y2="24"/><line x1="14" y1="32" x2="22" y2="31"/><line x1="34" y1="18" x2="42" y2="17"/><line x1="34" y1="25" x2="42" y2="24"/><line x1="34" y1="32" x2="42" y2="31"/></svg></div>
+      <h2>Welcome to the<br/>WAEC 2026 Tutor</h2>
+      <p>Your AI-powered SSCE tutor covering all 15 subjects, aligned to the official 2026 WAEC syllabus. Works anywhere.</p>
+    </div>
+    <div class="slide hidden" id="sl1">
+      <div class="sring"><svg viewBox="0 0 56 56" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="36" r="4" fill="white" stroke="none"/><path d="M19 27C21.5 24.4 24.6 23 28 23C31.4 23 34.5 24.4 37 27"/><path d="M11 19C15.7 14.3 21.5 12 28 12C34.5 12 40.3 14.3 45 19"/><circle cx="44" cy="12" r="6" fill="#66BB6A" stroke="none"/><path d="M41 12l2.2 2.2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h2>Works Offline,<br/>Always</h2>
+      <p>Zero signal? No problem. Questions queue and answers cache locally. Study on 2G, in the bush, anywhere.</p>
+    </div>
+    <div class="slide hidden" id="sl2">
+      <div class="sring"><svg viewBox="0 0 56 56" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="28" r="18"/><circle cx="28" cy="28" r="10" stroke="rgba(255,255,255,.6)"/><circle cx="28" cy="28" r="4" fill="white" stroke="none"/><path d="M36 10 L40 6 L46 6 L46 12 L42 16" stroke="rgba(255,255,255,.8)"/><line x1="36" y1="10" x2="28" y2="22" stroke="rgba(255,255,255,.8)"/></svg></div>
+      <h2>Syllabus-Aligned<br/>& Exam-Ready</h2>
+      <p>Every answer references your WAEC paper and topic. Proper math notation. WAEC-style practice questions.</p>
+    </div>
+  </div>
+  <div class="ob-dots"><div class="od active" id="d0"></div><div class="od" id="d1"></div><div class="od" id="d2"></div></div>
+  <div class="ob-foot">
+    <button class="btn btn-white" id="obn" onclick="OB.next()">CONTINUE</button>
+    <button class="btn btn-ghost-w" onclick="App.go('auth')">Skip to Login</button>
+  </div>
+</div>
+
+<!-- ══ AUTH ══ -->
+<div class="screen hidden" id="sc-auth">
+  <div class="auth-hero">
+    <div class="auth-logo">EduAI <span>2026 WAEC SSCE Tutor</span></div>
+    <div class="auth-hero-sub">Join over 50,000 SS3 students preparing smarter for WAEC 2026. Free forever.</div>
+  </div>
+  <div class="auth-tabs">
+    <button class="atab active" id="tab-login" onclick="Auth.switchTab('login')">Log In</button>
+    <button class="atab" id="tab-signup" onclick="Auth.switchTab('signup')">Sign Up</button>
+  </div>
+  <div class="auth-body">
+    <div id="auth-err" class="auth-err"></div>
+
+    <!-- Social login -->
+    <div class="social-row">
+      <button class="sbtn" onclick="Auth.social('Google')">
+        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Google
+      </button>
+      <button class="sbtn" onclick="Auth.social('Facebook')">
+        <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Facebook
+      </button>
+    </div>
+    <div class="divider">or continue with email</div>
+
+    <!-- Login form -->
+    <div id="form-login">
+      <div class="fgroup"><label class="flabel">Email Address</label><input class="finput" type="email" id="l-email" placeholder="yourname@email.com"/></div>
+      <div class="fgroup"><label class="flabel">Password</label><input class="finput" type="password" id="l-pass" placeholder="Enter your password"/></div>
+      <button class="btn btn-blue" onclick="Auth.login()" style="margin-top:4px">LOG IN</button>
+      <p class="auth-note"><a onclick="Auth.forgot()">Forgot password?</a></p>
+    </div>
+
+    <!-- Signup form -->
+    <div id="form-signup" style="display:none">
+      <div class="fgroup"><label class="flabel">Full Name</label><input class="finput" type="text" id="s-name" placeholder="Your full name"/></div>
+      <div class="fgroup"><label class="flabel">Email Address</label><input class="finput" type="email" id="s-email" placeholder="yourname@email.com"/></div>
+      <div class="fgroup"><label class="flabel">Phone Number</label><input class="finput" type="tel" id="s-phone" placeholder="+234 800 000 0000"/></div>
+      <div class="fgroup"><label class="flabel">Password</label><input class="finput" type="password" id="s-pass" placeholder="Create a password (min 6 chars)"/></div>
+      <button class="btn btn-blue" onclick="Auth.signup()" style="margin-top:4px">CREATE ACCOUNT</button>
+      <p class="auth-note">By signing up you agree to our <a>Terms</a> &amp; <a>Privacy Policy</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="screen hidden" id="sc-home">
+  <div class="home-hdr">
+    <div class="sb-row">
+      <span>9:41</span>
+      <div class="cpill lp"><div class="cdot" id="hd"></div><span id="hl">Offline</span></div>
+      <span>▐▐▐</span>
+    </div>
+    <div class="greet-row">
+      <div class="greet"><p id="greet-line">Good morning, candidate</p><h2 id="greet-name">WAEC 2026 is coming.</h2></div>
+      <div class="hdr-acts">
+        <button class="hdr-btn" title="Notifications"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <button class="hdr-btn" onclick="Settings.open()" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21.9 9.5M21.9 14.5a10 10 0 0 1-2.83 4.57M4.93 19.07A10 10 0 0 1 2.1 14.5M2.1 9.5a10 10 0 0 1 2.83-4.57"/></svg></button>
+      </div>
+    </div>
+    <!-- LIVE SEARCH -->
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="home-search" type="text" placeholder="Search subjects, topics, questions…" oninput="Search.run(this.value)" onfocus="Search.show()" autocomplete="off"/>
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <div class="home-scroll">
+    <div class="feat-banner" onclick="App.quick('math')" style="margin-top:2px">
+      <div class="feat-ico"><svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-math"/></svg></div>
+      <div class="feat-txt"><h3>2026 WAEC SSCE Prep</h3><p>15 subjects · AI-powered · Offline-first · Curriculum-aligned</p></div>
+      <span class="feat-badge">WAEC</span>
+    </div>
+    <div class="sec-hdr" style="margin-top:4px"><span class="sec-ttl">Top Search</span><button class="see-all" onclick="App.go('subjects')">See all ›</button></div>
+    <div class="topics-row" id="tchips"></div>
+    <div class="sec-hdr"><span class="sec-ttl">Featured Subjects</span><button class="see-all" onclick="App.go('subjects')">See all ›</button></div>
+    <div class="home-sgrid" id="hsgrid"></div>
+    <div class="sec-hdr"><span class="sec-ttl">Continue Learning</span></div>
+    <div id="clist"></div>
+  </div>
+
+  <div id="bnav">
+    <button class="ni active" id="nav-home" onclick="App.nav(this,'home')"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>Home</button>
+    <button class="ni" id="nav-curr" onclick="App.nav(this,'curriculum')"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Syllabus</button>
+    <button class="nfab" onclick="App.go('subjects')"><div class="nfab-i"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Chat</span></button>
+    <button class="ni" id="nav-quiz" onclick="App.nav(this,'quiz')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Quiz</button>
+    <button class="ni" id="nav-dash" onclick="App.nav(this,'dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</button>
+  </div>
+</div>
+
+<!-- ══ SUBJECT PICKER ══ -->
+<div class="screen hidden" id="sc-subjects">
+  <div class="page-hdr" style="flex-direction:column;align-items:stretch;gap:10px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="back-btn" onclick="App.go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="page-ttl">Choose Subject</span>
+      <div class="mode-toggle">
+      <button class="mbtn active" id="mf" onclick="App.mode('rich')">Full</button>
+      <button class="mbtn" id="ms" onclick="App.mode('sms')">SMS</button>
+    </div></div>
+    <div class="topics-row" style="margin:0;padding:0 0 4px">
+      <div class="tchip active" onclick="(function(el){el.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));el.classList.add('active');App.buildSubjects('all');})(this)">All</div><div class="tchip" onclick="(function(el){el.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));el.classList.add('active');App.buildSubjects('sciences');})(this)">Sciences</div><div class="tchip" onclick="(function(el){el.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));el.classList.add('active');App.buildSubjects('languages');})(this)">Languages</div><div class="tchip" onclick="(function(el){el.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));el.classList.add('active');App.buildSubjects('commercial');})(this)">Commercial</div><div class="tchip" onclick="(function(el){el.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));el.classList.add('active');App.buildSubjects('arts');})(this)">Arts</div><div class="tchip" onclick="(function(el){el.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));el.classList.add('active');App.buildSubjects('technical');})(this)">Technical</div>
+    </div>
+  </div>
+  <div class="stgrid" id="stgrid"></div>
+  <div class="subj-footer">
+    <button class="btn btn-blue" id="nxtbtn" disabled onclick="App.start()">Select a Subject to Begin</button>
+  </div>
+</div>
+
+<!-- ══ CURRICULUM BROWSER ══ -->
+<div class="screen hidden" id="sc-curriculum">
+  <div class="page-hdr">
+    <button class="back-btn" onclick="App.go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="page-ttl">2026 WAEC Syllabus</span>
+  </div>
+  <div class="curr-search-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="curr-search" type="text" placeholder="Search topics…" oninput="Curriculum.filter(this.value)"/>
+  </div>
+  <div class="curr-scroll" id="curr-scroll"></div>
+</div>
+
+<!-- ══ HISTORY ══ -->
+<div class="screen hidden" id="sc-history">
+  <div class="page-hdr">
+    <button class="back-btn" onclick="App.go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="page-ttl">Chat History</span>
+    <button class="iBtn" onclick="History.clearAll()" title="Clear all"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+  </div>
+  <div class="hist-scroll" id="hist-scroll"></div>
+</div>
+
+<!-- ══ CHAT ══ -->
+<div class="screen hidden" id="sc-chat">
+  <div class="chat-hdr">
+    <button class="back-btn" onclick="App.go('subjects')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="chat-av" id="cav" style="background:var(--blue-pale)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-math"/></svg></div>
+    <div class="chat-info">
+      <div class="chat-name" id="cname">Mathematics</div>
+      <div class="chat-st-row"><div class="chat-sdot" id="csd"></div><span class="chat-st" id="cst">Offline</span><span class="sms-badge" id="smsbadge">SMS</span></div>
+    </div>
+    <button class="iBtn" onclick="App.practice()" title="Practice questions"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button>
+  </div>
+  <div id="api-banner" class="hidden">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="api-banner-txt">API key needed to chat<span>Paste your Anthropic key below</span></div>
+    <input id="api-key-input" type="password" placeholder="sk-ant-…" autocomplete="off"/>
+    <button class="api-save-btn" onclick="Settings.saveApiKey()">Save</button>
+  </div>
+  <div id="oq" class="hidden"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div id="qcnt">0</div><span id="qtxt">queued</span></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="qchips" id="qchips"></div>
+  <div class="iarea">
+    <div class="irow">
+      <textarea id="qi" placeholder="Ask anything about your WAEC syllabus…" rows="1"></textarea>
+      <button id="sbtn" onclick="App.send()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+    <div class="dhint">↵ send · offline-first · KaTeX math · WAEC curriculum</div>
+  </div>
+</div>
+
+
+<!-- ══ QUIZ SCREEN ══ -->
+<div class="screen hidden" id="sc-quiz">
+  <div class="page-hdr">
+    <button class="back-btn" onclick="App.go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="page-ttl">Past Questions</span>
+    <div id="quiz-score-badge" style="display:none;background:var(--blue);color:#fff;font-family:var(--f);font-size:11px;font-weight:800;padding:4px 10px;border-radius:8px"></div>
+  </div>
+  <!-- Subject selector tabs -->
+  <div style="padding:10px 14px 0;background:#fff;border-bottom:1px solid var(--bdr);flex-shrink:0">
+    <div class="topics-row" id="quiz-subject-tabs" style="margin-bottom:0;padding-bottom:10px"></div>
+  </div>
+  <!-- Quiz content -->
+  <div class="scrollable" style="padding:16px 14px 88px" id="quiz-scroll">
+    <div id="quiz-body"></div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD SCREEN ══ -->
+<div class="screen hidden" id="sc-dashboard">
+  <div class="page-hdr" style="background:var(--blue-g);border:none">
+    <span class="page-ttl" style="color:#fff;font-size:18px">Impact Dashboard</span>
+    <div class="cpill lp"><div class="cdot" id="dd"></div><span id="dl">Offline</span></div>
+  </div>
+  <div class="scrollable" style="padding:16px 14px 88px" id="dash-scroll">
+
+    <!-- Summary cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px" id="dash-kpis"></div>
+
+    <!-- Subject breakdown -->
+    <div class="sec-hdr" style="margin-bottom:10px"><span class="sec-ttl">Subjects Studied</span></div>
+    <div id="dash-subjects" style="margin-bottom:18px"></div>
+
+    <!-- Quiz performance -->
+    <div class="sec-hdr" style="margin-bottom:10px"><span class="sec-ttl">Quiz Performance</span></div>
+    <div id="dash-quiz-perf" style="margin-bottom:18px"></div>
+
+    <!-- Weekly activity -->
+    <div class="sec-hdr" style="margin-bottom:10px"><span class="sec-ttl">7-Day Activity</span></div>
+    <div id="dash-activity" style="background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-bottom:18px"></div>
+
+    <!-- Export for NGO -->
+    <button onclick="Dashboard.exportReport()" style="width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.3)">
+      Download Impact Report (JSON)
+    </button>
+    <p style="text-align:center;font-size:11px;color:var(--t3);margin-top:8px;font-family:var(--f)">Share with NGO / Government partners to demonstrate reach</p>
+  </div>
+</div>
+
+
+<!-- ══ SETTINGS ══ -->
+<div class="screen hidden" id="sc-settings">
+  <div class="page-hdr" style="background:var(--blue-g);border:none">
+    <button class="back-btn" style="background:rgba(255,255,255,.18)" onclick="App.go('account')"><svg viewBox="0 0 24 24" style="stroke:#fff"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="page-ttl" style="color:#fff">Settings</span>
+  </div>
+  <div class="scrollable" style="padding:0 14px 88px">
+
+    <div class="sett-section-ttl">Appearance</div>
+    <div class="sett-section">
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#E8EAF6"><svg style="stroke:#3F51B5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">Theme</div>
+          <div class="sett-sub">Choose your preferred look</div>
+          <div class="theme-row">
+            <div class="theme-opt active" id="theme-light" style="background:#F4F6FB;border:2px solid #E4E9F2" onclick="Settings.setTheme('light')" title="Light"></div>
+            <div class="theme-opt" id="theme-dark"  style="background:#111827" onclick="Settings.setTheme('dark')"  title="Dark"></div>
+            <div class="theme-opt" id="theme-blue"  style="background:linear-gradient(135deg,#1565C0,#42A5F5)" onclick="Settings.setTheme('blue')" title="Blue"></div>
+            <div class="theme-opt" id="theme-green" style="background:linear-gradient(135deg,#1B5E20,#4CAF50)" onclick="Settings.setTheme('green')" title="Green"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#E8F5E9"><svg style="stroke:#2E7D32" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">Font Size</div>
+          <div class="sett-sub" id="font-size-label">Medium (14px)</div>
+          <input type="range" class="font-slider" id="font-slider" min="12" max="18" value="14" oninput="Settings.setFont(this.value)"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-section-ttl">AI & Chat</div>
+    <div class="sett-section">
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#FFF3E0"><svg style="stroke:#E65100" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">SMS / Low-Data Mode</div>
+          <div class="sett-sub">Shorter responses for 2G connections</div>
+        </div>
+        <button class="toggle" id="sms-toggle" onclick="Settings.toggleSMS()"></button>
+      </div>
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#F3E5F5"><svg style="stroke:#6A1B9A" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">Show Math Notation Info</div>
+          <div class="sett-sub">Show LaTeX tips in chat header</div>
+        </div>
+        <button class="toggle on" id="math-toggle" onclick="Settings.toggleMath()"></button>
+      </div>
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#E8F5E9"><svg style="stroke:#2E7D32" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">Response Language</div>
+          <div class="sett-sub" id="lang-label">English</div>
+        </div>
+        <select onchange="Settings.setLang(this.value)" style="background:var(--bg);border:1.5px solid var(--bdr);border-radius:8px;padding:6px 8px;font-family:var(--f);font-size:12px;font-weight:700;color:var(--text);outline:none;cursor:pointer">
+          <option value="en">English</option>
+          <option value="pcm">Pidgin</option>
+          <option value="yo">Yoruba</option>
+          <option value="ha">Hausa</option>
+          <option value="ig">Igbo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sett-section-ttl">API Key</div>
+    <div class="sett-section">
+      <div class="sett-row" style="flex-direction:column;align-items:stretch;gap:8px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="sett-ico" style="background:#FFEBEE"><svg style="stroke:#C62828" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <div class="sett-info">
+            <div class="sett-name">Anthropic API Key</div>
+            <div class="sett-sub" id="api-key-status">Not set — chat will not work without this</div>
+          </div>
+        </div>
+        <div class="api-field">
+          <input type="password" id="sett-api-input" placeholder="sk-ant-api03-…" autocomplete="off"/>
+          <button onclick="Settings.saveApiKey()">Save</button>
+        </div>
+        <p style="font-size:11px;color:var(--t3);font-family:var(--f)">Get a free key at console.anthropic.com · Never shared, stored locally only</p>
+      </div>
+    </div>
+
+    <div class="sett-section-ttl">Quiz</div>
+    <div class="sett-section">
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">Quiz Mode</div>
+          <div class="sett-sub" id="quiz-mode-label">AI-Generated (dynamic)</div>
+        </div>
+        <button class="toggle on" id="quiz-ai-toggle" onclick="Settings.toggleQuizMode()"></button>
+      </div>
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#E8F5E9"><svg style="stroke:#2E7D32" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="sett-info">
+          <div class="sett-name">Quiz Difficulty</div>
+          <div class="sett-sub" id="diff-label">Mixed (all levels)</div>
+        </div>
+        <select onchange="Settings.setDifficulty(this.value)" style="background:var(--bg);border:1.5px solid var(--bdr);border-radius:8px;padding:6px 8px;font-family:var(--f);font-size:12px;font-weight:700;color:var(--text);outline:none;cursor:pointer">
+          <option value="mixed">Mixed</option>
+          <option value="easy">Easy (C6 level)</option>
+          <option value="medium">Medium (B3 level)</option>
+          <option value="hard">Hard (A1 level)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sett-section-ttl">Data & Privacy</div>
+    <div class="sett-section">
+      <div class="sett-row" onclick="Settings.clearCache()">
+        <div class="sett-ico" style="background:#FFF3E0"><svg style="stroke:#E65100" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></div>
+        <div class="sett-info"><div class="sett-name">Clear Response Cache</div><div class="sett-sub" id="cache-size-label">Cached responses: 0</div></div>
+        <div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="sett-row" onclick="Settings.clearHistory()">
+        <div class="sett-ico" style="background:#FFEBEE"><svg style="stroke:#C62828" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+        <div class="sett-info"><div class="sett-name">Clear Chat History</div><div class="sett-sub">Remove all saved sessions</div></div>
+        <div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACCOUNT ══ -->
+<div class="screen hidden" id="sc-account">
+  <div class="acct-hdr">
+    <div class="page-hdr" style="background:transparent;border:none;padding:10px 0 12px">
+      <button class="back-btn" style="background:rgba(255,255,255,.18)" onclick="App.go('home')"><svg viewBox="0 0 24 24" style="stroke:#fff"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="page-ttl" style="color:#fff">My Account</span>
+    </div>
+    <div class="acct-avatar-wrap"><div class="acct-avatar" id="acct-av"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div>
+    <div class="acct-name" id="acct-name">Student</div>
+    <div class="acct-email" id="acct-email">—</div>
+    <div class="acct-stats">
+      <div class="acct-stat"><div class="acct-stat-n" id="stat-sessions">0</div><div class="acct-stat-l">Sessions</div></div>
+      <div class="acct-stat"><div class="acct-stat-n" id="stat-questions">0</div><div class="acct-stat-l">Questions</div></div>
+      <div class="acct-stat"><div class="acct-stat-n" id="stat-subjects">0</div><div class="acct-stat-l">Subjects</div></div>
+    </div>
+  </div>
+  <div class="acct-scroll">
+    <div class="acct-section-ttl">Learning</div>
+    <div class="acct-row" onclick="App.go('curriculum')"><div class="acct-row-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ico-lit"/></svg></div><div class="acct-row-info"><div class="acct-row-name">WAEC Syllabus Browser</div><div class="acct-row-sub">View all 15 subjects & topics</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    <div class="acct-row" onclick="App.go('history')"><div class="acct-row-ico" style="background:#E8F5E9"><svg style="stroke:#2E7D32" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="acct-row-info"><div class="acct-row-name">Chat History</div><div class="acct-row-sub">Review your previous sessions</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    <div class="acct-section-ttl">Preferences</div>
+    <div class="acct-row"><div class="acct-row-ico" style="background:#FFF3E0"><svg style="stroke:#E65100" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21.9 9.5"/><path d="M21.9 14.5a10 10 0 0 1-2.83 4.57"/><path d="M4.93 19.07A10 10 0 0 1 2.1 14.5"/><path d="M2.1 9.5a10 10 0 0 1 2.83-4.57"/></svg></div><div class="acct-row-info"><div class="acct-row-name">SMS / Low-Data Mode</div><div class="acct-row-sub" id="acct-sms-label">Currently: Full Mode</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    <div class="acct-row" onclick="App.go('subjects')"><div class="acct-row-ico" style="background:#F3E5F5"><svg style="stroke:#6A1B9A" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ico-physics"/></svg></div><div class="acct-row-info"><div class="acct-row-name">Change Subject</div><div class="acct-row-sub">Switch to a different WAEC subject</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    <div class="acct-section-ttl">About</div>
+    <div class="acct-row"><div class="acct-row-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="acct-row-info"><div class="acct-row-name">App Version</div><div class="acct-row-sub">EduAI WAEC 2026 v2.0</div></div></div>
+    <div class="acct-section-ttl">App</div>
+    <div class="acct-row" onclick="App.go('settings')"><div class="acct-row-ico" style="background:#E8EAF6"><svg style="stroke:#3F51B5;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21.9 9.5"/><path d="M21.9 14.5a10 10 0 0 1-2.83 4.57"/><path d="M4.93 19.07A10 10 0 0 1 2.1 14.5"/><path d="M2.1 9.5a10 10 0 0 1 2.83-4.57"/></svg></div><div class="acct-row-info"><div class="acct-row-name">Settings</div><div class="acct-row-sub">Theme, font, API key, quiz settings</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    <button class="logout-btn" onclick="Auth.logout()">Log Out</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+</div><!-- #app -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DATA — 2026 WAEC subjects & full curriculum
+// ══════════════════════════════════════════════════════
+const SUBJS = [
+  // ── SCIENCES ──
+  {id:'math',      name:'Mathematics',              icon:'ico-math',    c:'#1565C0',bg:'#E3F2FD', track:'sciences',
+   paper:'Paper 1 (50 OBJ) + Paper 2 (Theory, answer 10 of 13)',
+   chips:['Quadratic equations','Circle theorems','Trigonometry: sine rule','Statistics: cumul. freq.','Vectors in 2D','Indices & logarithms'],
+   topics:['Number & Numeration','Algebraic Processes','Mensuration','Plane Geometry','Trigonometry','Statistics & Probability','Vectors & Transformation','Coordinate Geometry']},
+  {id:'furthermath',name:'Further Maths',           icon:'ico-math',    c:'#0D47A1',bg:'#E8EAF6', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory)',
+   chips:['Differentiation & applications','Integration of functions','Binomial theorem','Matrices & determinants','Permutations & combinations','Projectile motion'],
+   topics:['Pure Mathematics','Calculus','Algebra','Trigonometry','Statistics','Mechanics']},
+  {id:'physics',   name:'Physics',                  icon:'ico-physics', c:'#6A1B9A',bg:'#F3E5F5', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory) + Paper 3 (Practical)',
+   chips:["Newton's laws","Ohm's law & circuits","Electromagnetic induction","Radioactivity & half-life","Wave properties","Projectile motion"],
+   topics:['Mechanics','Waves','Heat','Optics','Electricity','Magnetism','Modern Physics','Practical']},
+  {id:'chem',      name:'Chemistry',                icon:'ico-chem',    c:'#C62828',bg:'#FFEBEE', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory) + Paper 3 (Practical)',
+   chips:['Mole concept & stoichiometry','Ionic & covalent bonding',"Faraday's laws","Organic: alkanes/alkenes","Le Chatelier's principle","Titration calculations"],
+   topics:['Atomic Structure','Chemical Bonding','States of Matter','Stoichiometry','Acids/Bases/Salts','Electrochemistry','Energetics','Kinetics & Equilibrium','Organic Chemistry','Non-metals','Metals']},
+  {id:'bio',       name:'Biology',                  icon:'ico-bio',     c:'#2E7D32',bg:'#E8F5E9', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory) + Paper 3 (Practical)',
+   chips:['Mitosis vs meiosis','Photosynthesis & respiration','Mendelian genetics','Circulatory system','Excretion & kidney','Ecology & food webs'],
+   topics:['Cell Biology','Nutrition','Transport','Respiration','Excretion','Reproduction','Coordination','Genetics','Ecology','Evolution','Practical']},
+  {id:'agric',     name:'Agricultural Science',     icon:'ico-agric',   c:'#388E3C',bg:'#F1F8E9', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory) + Paper 3 (Practical)',
+   chips:['Soil formation & profiles','Crop improvement methods','Animal husbandry & feeds','Farm management records','Pests & crop diseases','Irrigation & soil conservation'],
+   topics:['Crop Science','Animal Science','Soil Science','Farm Management','Agricultural Economics','Practical']},
+  {id:'health',    name:'Health Science',           icon:'ico-health',  c:'#00838F',bg:'#E0F7FA', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Communicable diseases','HIV/AIDS prevention','Environmental sanitation','Reproductive health','Drug abuse & addiction','First aid basics'],
+   topics:['Human Body Systems','Disease & Prevention','Environmental Health','Personal & Community Health','Reproductive Health','Substance Abuse']},
+  // ── LANGUAGES ──
+  {id:'english',   name:'English Language',         icon:'ico-english', c:'#E65100',bg:'#FFF3E0', track:'languages',
+   paper:'Paper 1 (Lexis & Structure) + Paper 2 (Essay/Comprehension) + Paper 3 (Oral)',
+   chips:['Formal letter writing','Comprehension strategies','Summary writing','Oral: stress & intonation','Idioms & phrasal verbs','Active/passive voice'],
+   topics:['Lexis & Structure','Essay Writing','Comprehension','Summary','Oral English','Grammar']},
+  {id:'lit',       name:'Literature in English',    icon:'ico-lit',     c:'#6A1B9A',bg:'#F3E5F5', track:'languages',
+   paper:'Paper 1 (50 OBJ) + Paper 2 (Essay on set texts)',
+   chips:['Drama: themes & characters','Poetry: figures of speech','Prose: narrative technique','Dramatic irony & symbolism','Tone, mood & diction',"Aristotle's unities"],
+   topics:['Drama','Prose','Poetry','Literary Devices','Set Texts Analysis']},
+  {id:'french',    name:'French',                   icon:'ico-french',  c:'#1565C0',bg:'#E3F2FD', track:'languages',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay/Composition) + Paper 3 (Oral/Aural)',
+   chips:['French verb conjugation','Letter writing in French','French comprehension','Translation exercises','Everyday vocabulary','Oral dialogue practice'],
+   topics:['Oral & Aural','Reading & Comprehension','Writing & Composition','Grammar','Vocabulary']},
+  {id:'yoruba',    name:'Yoruba',                   icon:'ico-lang',    c:'#BF360C',bg:'#FBE9E7', track:'languages',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay) + Paper 3 (Oral)',
+   chips:['Yoruba tones & phonology','Oral literature','Narrative composition','Grammar & sentence structure','Proverbs & idioms','Cultural studies'],
+   topics:['Oral & Phonology','Grammar','Comprehension','Composition','Literature','Cultural Studies']},
+  {id:'igbo',      name:'Igbo',                     icon:'ico-lang',    c:'#4E342E',bg:'#EFEBE9', track:'languages',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay) + Paper 3 (Oral)',
+   chips:['Igbo phonology & tones','Oral tradition & folklore','Composition writing','Parts of speech','Proverbs & idioms','Cultural studies'],
+   topics:['Oral & Phonology','Grammar','Comprehension','Composition','Literature','Cultural Studies']},
+  {id:'hausa',     name:'Hausa',                    icon:'ico-lang',    c:'#1B5E20',bg:'#E8F5E9', track:'languages',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay) + Paper 3 (Oral)',
+   chips:['Hausa phonology','Oral literature','Narrative & descriptive essays','Grammar & tense','Proverbs & idioms','Cultural studies'],
+   topics:['Oral & Phonology','Grammar','Comprehension','Composition','Literature','Cultural Studies']},
+  // ── SOCIAL SCIENCES ──
+  {id:'econ',      name:'Economics',                icon:'ico-econ',    c:'#00695C',bg:'#E0F2F1', track:'commercial',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Law of demand & supply','Elasticity of demand','Theory of production','National income: GDP/GNP','Monetary policy & banking','Perfect competition vs monopoly'],
+   topics:['Basic Concepts','Demand & Supply','Theory of Production','Market Structures','National Income','Money & Banking','Public Finance','International Trade','Agriculture & Industry']},
+  {id:'govt',      name:'Government',               icon:'ico-govt',    c:'#4E342E',bg:'#EFEBE9', track:'arts',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Nigerian 1999 Constitution','Fundamental human rights','Three arms of government','ECOWAS & AU','Electoral systems (INEC)','Federal vs unitary system'],
+   topics:['Political Concepts','Forms of Government','Nigerian Government','Nigerian Constitution','International Relations','Political Parties','Electoral Systems','Public Administration']},
+  {id:'hist',      name:'History',                  icon:'ico-hist',    c:'#5D4037',bg:'#EFEBE9', track:'arts',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Pre-colonial African civilisations','Trans-Atlantic slave trade','Berlin Conference 1884-85','Nigerian nationalism & independence','Pan-Africanism','World War I & II'],
+   topics:['Pre-colonial Africa','Slave Trade','Colonialism in Africa','Nigerian History','Post-independence Africa','World History','Historical Methods']},
+  {id:'geog',      name:'Geography',                icon:'ico-geo',     c:'#00838F',bg:'#E0F7FA', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory) + Paper 3 (Practical/Map)',
+   chips:['Map reading & contours','Plate tectonics & weathering','Population pyramids','Climate zones of West Africa','River processes','Nigeria: vegetation zones'],
+   topics:['Physical Geography','Climatology','Map Reading & Field Studies','Population','Economic Geography','West Africa','Nigeria','World Geography']},
+  // ── COMMERCIAL ──
+  {id:'acct',      name:'Financial Accounting',     icon:'ico-acct',    c:'#1565C0',bg:'#E3F2FD', track:'commercial',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory/Workings)',
+   chips:['Double-entry bookkeeping','Trading, P&L & balance sheet','Bank reconciliation','Partnership appropriation account','Ratio analysis','Errors & suspense account'],
+   topics:['Bookkeeping Basics','Final Accounts','Cash Book & Petty Cash','Non-profit Accounts','Partnership Accounts','Company Accounts','Ratio Analysis','Errors & Suspense']},
+  {id:'commerce',  name:'Commerce',                 icon:'ico-comm',    c:'#E65100',bg:'#FFF8E1', track:'commercial',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Aids to trade','Types of business organisations','Import/export procedures','Capital market & NSE','Principles of insurance','Retail vs wholesale trade'],
+   topics:['Home & Foreign Trade','Aids to Trade','Business Organisations','Banking','Insurance','Trade Documents','Import/Export Procedures','Capital Market']},
+  // ── RELIGIOUS STUDIES ──
+  {id:'crs',       name:'Christian Religious Studies',icon:'ico-crs',   c:'#5D4037',bg:'#EFEBE9', track:'arts',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Sermon on the Mount',"Paul's missionary journeys",'Life & teachings of Jesus','Moses & the Exodus','The early Church (Acts)','Christian ethics'],
+   topics:['Old Testament','New Testament','The Early Church','Christian Ethics','Contemporary Issues']},
+  {id:'irs',       name:'Islamic Religious Studies', icon:'ico-irs',    c:'#1B5E20',bg:'#E8F5E9', track:'arts',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay)',
+   chips:['Selected Quranic surahs','Life of Prophet Muhammad (SAW)','Five pillars of Islam','Islamic jurisprudence (Fiqh)','Articles of faith (Aqidah)','Islamic ethics & morality'],
+   topics:['Quran & Tafsir','Hadith','Islamic History','Theology (Aqidah)','Jurisprudence (Fiqh)','Islamic Ethics']},
+  // ── TECHNICAL & ARTS ──
+  {id:'ict',       name:'Computer Studies / ICT',   icon:'ico-ict',     c:'#1565C0',bg:'#E8EAF6', track:'sciences',
+   paper:'Paper 1 (OBJ) + Paper 2 (Theory) + Practical',
+   chips:['Algorithms & flowcharts','Excel spreadsheet functions','Database & SQL basics','Internet & cybersecurity','Introduction to Python','Word processing'],
+   topics:['Computer Fundamentals','Operating Systems','Word Processing','Spreadsheets','Databases','Internet & Networking','Programming','ICT & Society']},
+  {id:'td',        name:'Technical Drawing',        icon:'ico-td',      c:'#37474F',bg:'#ECEFF1', track:'technical',
+   paper:'Paper 1 (OBJ) + Paper 2 (Drawing exercises)',
+   chips:['Orthographic projection','Isometric drawing','Plane geometry constructions','Solid geometry & nets','Sectional views','Building drawing'],
+   topics:['Drawing Instruments','Plane Geometry','Solid Geometry','Orthographic Projection','Isometric & Oblique Drawing','Sectional Views','Building Drawing']},
+  {id:'phe',       name:'Physical & Health Education',icon:'ico-phe',   c:'#C62828',bg:'#FFEBEE', track:'arts',
+   paper:'Paper 1 (OBJ) + Paper 2 (Essay) + Practical',
+   chips:['Principles of training','Track & field rules','Sports science & fitness','First aid & CPR','Drugs in sport (WADA)','Human anatomy & physiology'],
+   topics:['History of PHE','Human Anatomy & Physiology','Health Concepts','Sports Science','Track & Field','Games','Gymnastics','Water Sports','First Aid','Drugs in Sport']},
+];
+
+const WAEC_KB_BY_SUBJECT = {
+  math: `MATHEMATICS: Number & Numeration (integers, fractions, decimals, indices, logarithms, standard form, surds, number bases, modular arithmetic). Algebraic Processes (expansion, factorisation, simultaneous equations, quadratic equations, inequalities, variation). Mensuration (perimeter, area, volume, arc length, sector area). Plane Geometry (lines & angles, triangles, polygons, circles, circle theorems, loci, construction). Trigonometry (sin/cos/tan, elevation/depression, sine & cosine rules, bearings). Statistics & Probability (mean, median, mode, frequency tables, histograms, cumulative frequency, probability). Vectors & Transformation (2D vectors, translation, reflection, rotation, enlargement, matrices). Coordinate Geometry (midpoint, distance, gradient, equation of line). Paper 1: 50 OBJ. Paper 2: 13 questions answer 10.`,
+  furthermath: `FURTHER MATHEMATICS: Pure Math (polynomials, partial fractions, binomial theorem, complex numbers). Calculus (differentiation, integration of algebraic & trig functions, maxima/minima, areas under curves). Algebra (matrices, determinants, mathematical induction). Trigonometry (compound angle formulae, t-formulae, general solutions). Statistics (permutations, combinations, probability distributions, hypothesis testing). Mechanics (statics, kinematics, dynamics, forces, moments, projectile motion).`,
+  physics: `PHYSICS: Mechanics (scalars/vectors, motion equations, Newton's laws, momentum, work-energy-power). Waves (types, properties, sound: speed/pitch/loudness/resonance; light: reflection/refraction). Heat (temperature, thermometers, heat transfer, gas laws, specific heat capacity, latent heat). Optics (plane & curved mirrors, lenses, optical instruments: eye/camera/microscope/telescope). Electricity (Ohm's law, series/parallel circuits, capacitors, electric power, EMF, internal resistance). Magnetism (fields, electromagnetism, DC motor, electromagnetic induction, AC generator). Modern Physics (alpha/beta/gamma decay, half-life, fission & fusion, photoelectric effect, X-rays). Practical (vernier calliper, micrometer, force-extension graphs, ray tracing, potentiometer).`,
+  chem: `CHEMISTRY: Atomic Structure (subatomic particles, electronic config, isotopes, periodic table trends). Chemical Bonding (ionic, covalent, metallic, hydrogen bonding, shapes of molecules). States of Matter (Boyle's law, Charles' law, Graham's law, kinetic theory, solutions, solubility). Stoichiometry (mole concept, empirical/molecular formulae, limiting reagents, % composition). Acids/Bases/Salts (pH, neutralisation, titration calculations, salt preparation, hydrolysis). Electrochemistry (electrolysis, products at electrodes, Faraday's laws, voltaic cells, electroplating). Energetics (exo/endothermic, Hess's law, bond energies, heat of neutralisation). Kinetics & Equilibrium (rates of reaction, Le Chatelier's principle, Kc, Kp). Organic Chemistry (alkanes, alkenes, alkynes, functional groups, isomerism, addition & substitution). Non-metals (H, O, N, Cl, S, C and compounds). Metals (extraction, reactivity series, alloys, corrosion, iron/steel, aluminium). Practical (qualitative analysis: cation & anion tests; titrations; gas preparation).`,
+  bio: `BIOLOGY: Cell Biology (plant & animal cell structure, mitosis/meiosis, osmosis, diffusion, active transport). Nutrition (balanced diet, photosynthesis, heterotrophic nutrition, enzymes, digestive system). Transport (circulatory system: heart/blood/blood vessels; transpiration; translocation in plants). Respiration (aerobic & anaerobic, gaseous exchange in plants/fish/insects/mammals). Excretion (kidney structure & function, osmoregulation, excretion in plants, liver functions). Reproduction (sexual & asexual, human reproductive system, puberty, pregnancy, STIs, fertilisation). Coordination (nervous system, reflex arc, sense organs, hormones, plant hormones). Genetics (DNA structure, Mendel's laws, monohybrid & dihybrid crosses, sex-linked traits, mutation). Ecology (food chains/webs, energy flow, population, ecosystem, pollution, conservation). Evolution (Darwin's theory, adaptation, natural selection).`,
+  agric: `AGRICULTURAL SCIENCE: Crop Science (types of crops, soil types, crop improvement by hybridisation & selection, diseases & pests, crop storage). Animal Science (types of livestock, feeds & feeding, animal health, diseases, breeds, products). Soil Science (soil formation, composition, profiles, pH, conservation, erosion, irrigation). Farm Management (types of farming, farm planning, record keeping, credit & finance, cooperative societies). Agricultural Economics (supply & demand, marketing, farm costs, land tenure).`,
+  health: `HEALTH SCIENCE: Human Body (skeletal, muscular, digestive, respiratory, circulatory, nervous, endocrine, reproductive systems). Disease & Prevention (malaria, cholera, HIV/AIDS, typhoid — communicable; diabetes, hypertension — non-communicable; vaccination, prevention). Environmental Health (sanitation, waste disposal, water treatment, vectors, pollution). Personal & Community Health (hygiene, nutrition, first aid, healthcare facilities). Reproductive Health (puberty, family planning, STIs, maternal & child health). Substance Abuse (effects of alcohol, tobacco, hard drugs; addiction and rehabilitation).`,
+  english: `ENGLISH LANGUAGE: Paper 1 — Lexis & Structure (50 OBJ): lexical items, antonyms/synonyms, sentence completion, idioms & phrasal verbs. Paper 2 — Essay Writing: formal/informal letters, reports, articles, speeches, narratives, expository essays. Paper 2 — Comprehension: two unseen passages, literal and inferential questions. Paper 2 — Summary: summarising a passage in specified number of points. Paper 3 — Oral English: vowels, consonants, stress & intonation, rhyme, phonetic transcription. Grammar: parts of speech, tenses, subject-verb agreement, direct/indirect speech, active/passive voice.`,
+  lit: `LITERATURE IN ENGLISH: Drama (set texts from African and non-African playwrights; themes, character analysis, dramatic techniques). Prose (set novels; narrative technique, plot, characterisation, setting, style). Poetry (prescribed poems; figures of speech, imagery, tone, mood, diction). Paper 1 — 50 objective questions on all three genres. Paper 2 — Extended essay questions on set texts; textual references required. Key terms: dramatic irony, soliloquy, metaphor, simile, alliteration, symbolism, Aristotle's unities (action/time/place).`,
+  french: `FRENCH: Oral/Aural (listening comprehension, pronunciation, dialogue). Reading (unseen passages, comprehension questions in French). Writing (composition, letter writing, translation French to English and English to French). Grammar (verb conjugation: present/past/future/subjunctive; gender; pronouns; articles). Vocabulary (health, transport, education, work, environment, everyday topics). Paper 3 — oral examination with examiner.`,
+  yoruba: `YORUBA: Oral/Phonology (tones: high/mid/low; phonemes; vowel harmony). Grammar (parts of speech, sentence construction, tense/aspect systems). Comprehension (reading passages with questions in Yoruba). Composition (narrative, descriptive and argumentative essays in Yoruba). Literature (set texts: prose, poetry, drama in Yoruba language). Cultural Studies (proverbs — owe, idioms, oral traditions, festivals, customs, Yoruba history).`,
+  igbo: `IGBO: Oral/Phonology (Igbo tones, phonemes, vowel system). Grammar (parts of speech, sentence construction). Comprehension (reading passages in Igbo). Composition (narrative and descriptive essays in Igbo). Literature (set texts in Igbo language). Cultural Studies (proverbs — ilu, idioms, oral traditions, festivals, Igbo customs and history, Odinala).`,
+  hausa: `HAUSA: Oral/Phonology (Hausa phonology, tones, pronunciation). Grammar (sentence structure, verb forms, gender in Hausa). Comprehension (reading passages in Hausa). Composition (essays in Hausa). Literature (set texts in Hausa language). Cultural Studies (proverbs — karin magana, oral literature, northern Nigerian culture, festivals, history).`,
+  econ: `ECONOMICS: Basic Concepts (scarcity, choice, opportunity cost, scale of preference, PPC, economic systems). Demand & Supply (laws, elasticity of demand/supply, market equilibrium, price controls). Theory of Production (factors of production, law of diminishing returns, costs: fixed/variable/total/marginal; revenue). Market Structures (perfect competition, monopoly, oligopoly, monopolistic competition). National Income (GDP/GNP/NNP, methods of calculation, standard of living, inflation, unemployment). Money & Banking (functions of money, commercial & central banks, monetary policy, credit creation). Public Finance (direct/indirect taxation, government budget, fiscal policy, public debt). International Trade (comparative advantage, balance of payments, exchange rates, ECOWAS, IMF, World Bank). Agriculture & Industry (role of agriculture, petroleum sector in Nigeria, industrialisation).`,
+  govt: `GOVERNMENT: Political Concepts (state, power, authority, legitimacy, sovereignty, democracy, constitution). Forms of Government (democracy, autocracy, federal & unitary systems, presidential vs parliamentary). Nigerian Government (pre-colonial kingdoms, British colonialism, post-independence). 1999 Constitution (fundamental rights, three arms: executive/legislative/judicial). International Relations (UN, AU, ECOWAS, Commonwealth, NAM, foreign policy, diplomacy). Electoral Systems (types of elections, INEC, voting methods, electoral malpractice). Public Administration (civil service, public corporations, local government, bureaucracy).`,
+  hist: `HISTORY: Pre-colonial Africa (early civilisations: Egypt, Mali, Songhai, Kanem-Bornu, Benin Kingdom, Yoruba states, Zulu Kingdom). Slave Trade (trans-Atlantic & trans-Saharan; causes, effects, abolition). Colonialism in Africa (Scramble & partition, Berlin Conference 1884-85, colonial administration systems, African resistance movements). Nigerian History (pre-colonial kingdoms, British colonialism, amalgamation 1914, nationalism, independence 1960, post-independence). Post-independence Africa (Pan-Africanism, OAU/AU, decolonisation). World History (World War I & II, Cold War, formation of UN, Apartheid in South Africa, Civil Rights movement). Historical Methods (primary & secondary sources, oral tradition, archaeology).`,
+  geog: `GEOGRAPHY: Physical Geography (earth structure, plate tectonics, weathering & erosion, rivers, coasts, glaciers, karst topography). Climatology (atmospheric pressure, winds, humidity, rainfall types, climate zones of Africa, climate change). Map Reading & Field Studies (topographical maps, contours, symbols, scale, compass bearings, grid references). Population (distribution, density, growth rate, migration, population pyramids, demographic transition model). Economic Geography (farming systems, mining, industry, trade, transport). West Africa (physical features, rivers, climate, vegetation, countries, economic activities). Nigeria (states, cities, vegetation zones, drainage, mineral resources). World Geography (continents, global trade, developing vs developed economies).`,
+  acct: `FINANCIAL ACCOUNTING: Bookkeeping Basics (double-entry principle, source documents, journals, ledgers, trial balance). Final Accounts (trading, profit & loss account; balance sheet for sole trader, partnership, limited company). Cash Book & Petty Cash (three-column cash book, imprest system, bank reconciliation statement). Non-profit Accounts (receipts & payments account, income & expenditure account, accumulated fund). Partnership Accounts (capital/current accounts, appropriation account, admission/retirement of partners, dissolution). Company Accounts (issue of shares/debentures, profit appropriation, published accounts). Ratio Analysis (liquidity, profitability, efficiency ratios). Errors & Suspense (types of accounting errors, rectifying journal entries, suspense account).`,
+  commerce: `COMMERCE: Trade (home trade, foreign trade, retail & wholesale, e-commerce, types of retailers). Aids to Trade (banking, insurance, transportation: road/rail/sea/air; warehousing, advertising, communication). Business Organisations (sole proprietorship, partnership, cooperatives, private/public limited companies, public enterprises). Banking (types of accounts, cheques, e-banking, central bank functions, credit creation). Insurance (insurable interest, utmost good faith, subrogation, indemnity; types of policies). Trade Documents (invoice, receipt, credit/debit notes, statement of accounts). Import/Export (customs, tariffs, bill of lading, letter of credit, import licences). Capital Market (stock exchange, shares, debentures, bonds, NSE).`,
+  crs: `CHRISTIAN RELIGIOUS STUDIES: Old Testament (Creation, the Fall, Patriarchs: Abraham/Isaac/Jacob, Moses & the Exodus, the Law, Judges, Kings, the Prophets). New Testament (Birth of Jesus, teachings: Sermon on the Mount, parables, miracles, death, resurrection, ascension). The Church (growth of early Church in Acts of the Apostles, Paul's missionary journeys, epistles to early churches). Christian Ethics (love, justice, forgiveness, stewardship, family life, social responsibilities). Contemporary Issues (corruption, poverty, violence, HIV/AIDS, environmental care from a Christian perspective).`,
+  irs: `ISLAMIC RELIGIOUS STUDIES: Quran (selected surahs — recitation & meaning, tafsir, revelation and compilation of the Quran). Hadith (selected hadith, authenticity, major collections: Bukhari, Muslim). Islamic History (life of Prophet Muhammad SAW, the Rightly Guided Caliphs, spread of Islam in West Africa). Theology — Aqidah (articles of faith: tawhid/oneness of Allah, angels, books, prophets, Day of Judgement, qadar/divine decree). Jurisprudence — Fiqh (five pillars: salah, sawm, zakat, hajj; purification/taharah; marriage and family law; inheritance). Islamic Ethics (morality, social conduct, economic principles, political theory in Islam).`,
+  ict: `COMPUTER STUDIES/ICT: Computer Fundamentals (history of computing, hardware/software/peopleware, types of computers, number systems). Operating Systems (functions, Windows/Linux basics, file management, GUI). Word Processing (Microsoft Word: formatting, tables, mail merge, templates). Spreadsheets (Microsoft Excel: formulae, functions, charts, data analysis, VLOOKUP, IF). Databases (concepts, Access/SQL basics, queries, forms, reports). Internet & Networking (LAN/WAN/MAN, protocols, browsers, email, cybersecurity, social media, cloud computing). Programming (algorithms, flowcharts, pseudocode, Python basics, Visual Basic). ICT & Society (e-commerce, digital citizenship, data privacy, cybercrime, ICT in governance).`,
+  td: `TECHNICAL DRAWING: Drawing Instruments (use and care of set squares, compasses, protractors, drawing boards, T-square). Plane Geometry (bisection of lines & angles, perpendiculars, circles, tangents, regular polygons, loci constructions). Solid Geometry (prisms, pyramids, cylinders, cones, spheres; surface development and nets). Orthographic Projection (first & third angle projection; front/side/top views; hidden detail lines; true shapes). Isometric & Oblique Drawing (pictorial representation, cavalier/cabinet oblique, isometric views). Sectional Views (full section, half section, revolved & removed sections; hatching conventions). Dimensioning (standards, surface finish symbols, title blocks, drawing conventions). Building Drawing (site plan, floor plan, elevation, sectional drawing, symbols).`,
+  phe: `PHYSICAL & HEALTH EDUCATION: History of PHE (development of physical education, Olympic Games history, sports in Nigeria). Human Anatomy & Physiology (skeletal, muscular, cardiovascular & respiratory systems; effects of exercise on body systems). Health Concepts (dimensions of health: physical/mental/social/spiritual; wellness; disease prevention). Sports Science (principles of training: overload, specificity, progression; fitness components: strength, endurance, flexibility, speed). Track & Field (rules and techniques for sprints, middle & long distance, jumps, throws). Games (rules, skills and tactics for football, basketball, volleyball, handball, tennis, table tennis, badminton). First Aid (RICE — rest/ice/compression/elevation; CPR; common sports injuries; emergency procedures). Drugs in Sport (performance-enhancing drugs, doping, WADA regulations, effects of drug abuse).`,
+};
+
+// Per-subject knowledge base (lazy — only inject relevant subject)
+const getSubjKB = (id) => WAEC_KB_BY_SUBJECT[id] || '';
+
+const WAEC_EXAM_KB = `WAEC EXAM OVERVIEW: West African Examinations Council (WAEC). Certificate: West African Senior School Certificate (WASSC). Sessions: May/June (school) and November/December (private). Compulsory subjects: English Language and Mathematics. Students sit minimum 8, maximum 9 subjects. Grading: A1(75-100%)=Distinction, B2(70-74%)=Very Good, B3(65-69%)=Very Good, C4-C6(50-64%)=Credit/Pass for university, D7-E8(40-49%)=Pass, F9(0-39%)=Fail. Most universities require at least 5 credits (A1-C6) including English and Mathematics. Science track: English, Maths, Physics, Chemistry, Biology + 2 electives. Commercial track: English, Maths, Economics, Accounting, Commerce + 2 electives. Arts/Humanities track: English, Maths or Further Maths, Literature, Government or History + 2 electives. Past questions 2015-2024 essential — WAEC repeats patterns regularly. Paper 1 (objective): approximately 1.2 minutes per question. Paper 2 (theory): allocate equal time across essay questions.`;
+
+// ══════════════════════════════════════════════════════
+//  STORAGE  (localStorage wrapper with JSON safety)
+// ══════════════════════════════════════════════════════
+const Store = {
+  get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}},
+  del(k){try{localStorage.removeItem(k)}catch{}}
+};
+
+// ══════════════════════════════════════════════════════
+//  ONBOARDING
+// ══════════════════════════════════════════════════════
+const OB = (() => {
+  let i = 0;
+  const next = () => {
+    if (i < 2) {
+      document.getElementById(`sl${i}`).classList.add('prev');
+      i++;
+      document.getElementById(`sl${i}`).classList.remove('hidden');
+      [0,1,2].forEach(n => document.getElementById(`d${n}`).classList.toggle('active', n===i));
+      if (i===2) document.getElementById('obn').textContent = "LET'S GO";
+    } else { App.go('auth'); }
+  };
+  return { next };
+})();
+
+// ══════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════
+const Auth = (() => {
+  const switchTab = (tab) => {
+    document.getElementById('tab-login').classList.toggle('active', tab==='login');
+    document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+    document.getElementById('form-login').style.display = tab==='login'?'block':'none';
+    document.getElementById('form-signup').style.display = tab==='signup'?'block':'none';
+    document.getElementById('auth-err').classList.remove('show');
+  };
+  const err = (msg) => { const el=document.getElementById('auth-err'); el.textContent=msg; el.classList.add('show'); };
+  const login = () => {
+    const email = document.getElementById('l-email').value.trim();
+    const pass  = document.getElementById('l-pass').value;
+    if (!email || !pass) { err('Please fill in all fields.'); return; }
+    const users = Store.get('ea_users', {});
+    if (!users[email]) { err('No account found. Please sign up first.'); return; }
+    if (users[email].pass !== btoa(pass)) { err('Incorrect password. Please try again.'); return; }
+    Store.set('ea_user', {email, name:users[email].name, phone:users[email].phone});
+    App.afterLogin();
+  };
+  const signup = () => {
+    const name  = document.getElementById('s-name').value.trim();
+    const email = document.getElementById('s-email').value.trim();
+    const phone = document.getElementById('s-phone').value.trim();
+    const pass  = document.getElementById('s-pass').value;
+    if (!name || !email || !pass) { err('Please fill in all required fields.'); return; }
+    if (pass.length < 6) { err('Password must be at least 6 characters.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err('Please enter a valid email address.'); return; }
+    const users = Store.get('ea_users', {});
+    if (users[email]) { err('An account with this email already exists. Log in instead.'); return; }
+    users[email] = {name, phone, pass: btoa(pass)};
+    Store.set('ea_users', users);
+    Store.set('ea_user', {email, name, phone});
+    App.afterLogin();
+  };
+  const social = (provider) => {
+    // Demo — in production wire to OAuth
+    const demoUser = {email:`demo@eduai.app`, name:`Demo Student`, phone:''};
+    Store.set('ea_user', demoUser);
+    App.afterLogin();
+  };
+  const logout = () => {
+    Store.del('ea_user');
+    App.go('auth');
+    toast('Logged out successfully');
+  };
+  const forgot = () => { toast('Password reset: check your email (demo mode)'); };
+  return { switchTab, login, signup, social, logout, forgot };
+})();
+
+// ══════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════
+const toast = (msg, dur=2600) => {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+};
+
+// ══════════════════════════════════════════════════════
+//  MATH RENDERING  (KaTeX — called after DOM insert)
+// ══════════════════════════════════════════════════════
+const renderMath = (el) => {
+  if (!el || typeof renderMathInElement === 'undefined') return;
+  try {
+    renderMathInElement(el, {
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false},
+        {left:'\\[',right:'\\]',display:true},
+        {left:'\\(',right:'\\)',display:false}
+      ],
+      throwOnError: false,
+      strict: false
+    });
+  } catch(e) { console.warn('KaTeX:', e); }
+};
+
+// ══════════════════════════════════════════════════════
+//  FORMAT AI RESPONSE  (full markdown + KaTeX-safe)
+// ══════════════════════════════════════════════════════
+const fmtAI = (text) => {
+  // ── STEP 1: Protect math from HTML escaping ──
+  const mb = [];
+  const protect = (raw) => { mb.push(raw); return `\x00M${mb.length-1}\x00`; };
+  text = text.replace(/\$\$([\s\S]+?)\$\$/g,   (_,m) => protect(`$$${m}$$`));
+  text = text.replace(/\\\[([\s\S]+?)\\\]/g,    (_,m) => protect(`\\[${m}\\]`));
+  text = text.replace(/\$([^\$\n]{1,300}?)\$/g, (_,m) => protect(`$${m}$`));
+  text = text.replace(/\\\(([^\)]{1,200}?)\\\)/g,(_,m)=> protect(`\\(${m}\\)`));
+
+  // ── STEP 2: Split into lines and process block-level elements ──
+  const lines = text.split('\n');
+  const out = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // ── Fenced code block  ```lang ... ``` ──
+    if (/^```/.test(line)) {
+      const lang = line.slice(3).trim();
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !/^```/.test(lines[i])) {
+        codeLines.push(lines[i].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        i++;
+      }
+      out.push(`<pre class="md-pre"><code>${codeLines.join('\n')}</code></pre>`);
+      i++;
+      continue;
+    }
+
+    // ── Markdown table  | col | col | ──
+    if (/^\|/.test(line) && /\|/.test(line)) {
+      const tableLines = [];
+      while (i < lines.length && /^\|/.test(lines[i])) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      // Parse table: first row = header, second row = separator (skip), rest = body
+      const rows = tableLines.filter(r => !/^\|[-:\s|]+$/.test(r.trim()));
+      const parseRow = (r) => r.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+      if (rows.length >= 1) {
+        const headCells = parseRow(rows[0]).map(c =>
+          `<th>${inlineFormat(c)}</th>`).join('');
+        const bodyRows = rows.slice(1).map(r =>
+          `<tr>${parseRow(r).map(c=>`<td>${inlineFormat(c)}</td>`).join('')}</tr>`
+        ).join('');
+        out.push(`<div class="md-table-wrap"><table class="md-table"><thead><tr>${headCells}</tr></thead><tbody>${bodyRows}</tbody></table></div>`);
+      }
+      continue;
+    }
+
+    // ── Horizontal rule --- ──
+    if (/^---+$/.test(line.trim())) {
+      out.push('<hr class="md-hr"/>');
+      i++; continue;
+    }
+
+    // ── Headings ### ## # ──
+    const hMatch = line.match(/^(#{1,4})\s+(.*)/);
+    if (hMatch) {
+      const lvl = Math.min(hMatch[1].length + 2, 5); // map #→h3, ##→h4 for chat sizing
+      out.push(`<h${lvl} class="md-h${lvl}">${inlineFormat(hMatch[2])}</h${lvl}>`);
+      i++; continue;
+    }
+
+    // ── Step 1:, Step 2: ──
+    const stepMatch = line.match(/^Step\s+(\d+):\s*(.*)/i);
+    if (stepMatch) {
+      out.push(`<div class="step-wrap"><span class="step-lbl">STEP ${stepMatch[1]}</span><div class="step-body">${inlineFormat(stepMatch[2])}</div></div>`);
+      i++; continue;
+    }
+
+    // ── Unordered list - item ──
+    if (/^[-*]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i])) {
+        items.push(`<li>${inlineFormat(lines[i].replace(/^[-*]\s+/,''))}</li>`);
+        i++;
+      }
+      out.push(`<ul class="md-ul">${items.join('')}</ul>`);
+      continue;
+    }
+
+    // ── Ordered list 1. item ──
+    if (/^\d+\.\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
+        items.push(`<li>${inlineFormat(lines[i].replace(/^\d+\.\s+/,''))}</li>`);
+        i++;
+      }
+      out.push(`<ol class="md-ol">${items.join('')}</ol>`);
+      continue;
+    }
+
+    // ── Empty line → paragraph break ──
+    if (line.trim() === '') {
+      out.push('<div class="md-gap"></div>');
+      i++; continue;
+    }
+
+    // ── Regular paragraph line ──
+    out.push(`<p class="md-p">${inlineFormat(line)}</p>`);
+    i++;
+  }
+
+  // ── STEP 3: Restore math placeholders ──
+  let result = out.join('');
+  result = result.replace(/\x00M(\d+)\x00/g, (_, idx) => {
+    const raw = mb[+idx];
+    const isDisp = raw.startsWith('$$') || raw.startsWith('\\[');
+    return isDisp
+      ? `<div class="math-block">${raw}</div>`
+      : `<span class="math-inline">${raw}</span>`;
+  });
+  return result;
+};
+
+// Inline markdown: bold, italic, inline-code, links — applied to text fragments
+const inlineFormat = (t) => {
+  t = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Restore any math placeholders inside inline text (already protected)
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/\*([^*]+?)\*/g,  '<em>$1</em>');
+  t = t.replace(/`([^`]+)`/g,     '<code class="md-code">$1</code>');
+  return t;
+};
+
+// ══════════════════════════════════════════════════════
+//  LIVE SEARCH
+// ══════════════════════════════════════════════════════
+const Search = (() => {
+  let timer = null;
+  const show = () => {};
+  const run = (q) => {
+    clearTimeout(timer);
+    const results = document.getElementById('search-results');
+    const input = document.getElementById('home-search');
+    if (!q.trim()) { results.classList.remove('show'); return; }
+    timer = setTimeout(() => {
+      const hits = [];
+      const ql = q.toLowerCase();
+      SUBJS.forEach(s => {
+        if (s.name.toLowerCase().includes(ql)) {
+          hits.push({type:'subject', label:s.name, sub:'Open subject session', s});
+        }
+        s.topics.forEach(t => {
+          if (t.toLowerCase().includes(ql)) {
+            hits.push({type:'topic', label:t, sub:`${s.name} · Click to ask AI`, s, topic:t});
+          }
+        });
+        s.chips.forEach(c => {
+          if (c.toLowerCase().includes(ql)) {
+            hits.push({type:'question', label:c, sub:`${s.name} · Quick question`, s, q:c});
+          }
+        });
+      });
+      if (!hits.length) {
+        // fallback — ask AI directly
+        hits.push({type:'ask', label:`Ask AI: "${q}"`, sub:'Open chat with this question', q});
+      }
+      results.innerHTML = hits.slice(0,7).map(h => `
+        <div class="sr-item" onclick="Search.pick(${JSON.stringify(h).replace(/"/g,'&quot;')})">
+          <div class="sr-ico" style="background:${h.s?.bg||'#E3F2FD'}">
+            <svg viewBox="0 0 28 28" fill="none" stroke="${h.s?.c||'#1565C0'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#${h.s?.icon||'ico-math'}"/></svg>
+          </div>
+          <div class="sr-info"><div class="sr-name">${h.label}</div><div class="sr-sub">${h.sub}</div></div>
+        </div>`).join('');
+      results.classList.add('show');
+    }, 220);
+  };
+  const pick = (h) => {
+    document.getElementById('search-results').classList.remove('show');
+    document.getElementById('home-search').value = '';
+    if (h.type === 'subject') { App.quick(h.s.id); }
+    else if (h.type === 'topic') { App.quick(h.s.id, h.topic); }
+    else if (h.type === 'question') { App.quick(h.s.id, h.q); }
+    else if (h.type === 'ask') {
+      // Ask current or default subject
+      const sid = App.getSel()?.id || 'math';
+      App.quick(sid, h.q);
+    }
+  };
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) {
+      document.getElementById('search-results')?.classList.remove('show');
+    }
+  });
+  return { run, show, pick };
+})();
+
+// ══════════════════════════════════════════════════════
+//  CURRICULUM BROWSER
+// ══════════════════════════════════════════════════════
+const Curriculum = (() => {
+  const render = () => {
+    const c = document.getElementById('curr-scroll');
+    if (!c) return;
+    c.innerHTML = SUBJS.map(s => `
+      <div class="curr-subj-section" id="csec-${s.id}">
+        <div class="curr-subj-hdr" onclick="Curriculum.toggle('${s.id}')">
+          <div class="curr-subj-ico" style="background:${s.bg}">
+            <svg viewBox="0 0 28 28" fill="none" stroke="${s.c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#${s.icon}"/></svg>
+          </div>
+          <span class="curr-subj-name">${s.name}</span>
+          <span class="curr-subj-count">${s.topics.length} topics</span>
+          <svg class="curr-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="curr-topics">
+          ${s.topics.map(t => `
+            <div class="curr-topic-item" onclick="Curriculum.askTopic('${s.id}','${t.replace(/'/g,"\\'")}')">
+              <div class="topic-dot"></div>
+              <span class="topic-name">${t}</span>
+              <span class="topic-ask">Ask AI →</span>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  };
+  const toggle = (id) => {
+    const sec = document.getElementById(`csec-${id}`);
+    if (sec) sec.classList.toggle('open');
+  };
+  const askTopic = (sid, topic) => {
+    App.quick(sid, `Explain the WAEC topic: ${topic}. Cover the key concepts, give a worked example, and end with a WAEC-style practice question.`);
+  };
+  const filter = (q) => {
+    const ql = q.toLowerCase().trim();
+    document.querySelectorAll('.curr-subj-section').forEach(sec => {
+      const id = sec.id.replace('csec-','');
+      const s = SUBJS.find(x=>x.id===id);
+      if (!s) return;
+      let anyMatch = s.name.toLowerCase().includes(ql);
+      let topicsHtml = '';
+      s.topics.forEach(t => {
+        const match = !ql || t.toLowerCase().includes(ql) || s.name.toLowerCase().includes(ql);
+        if (match) anyMatch = true;
+        topicsHtml += `<div class="curr-topic-item" onclick="Curriculum.askTopic('${id}','${t.replace(/'/g,"\\'")}')"><div class="topic-dot"></div><span class="topic-name">${t}</span><span class="topic-ask">Ask AI →</span></div>`;
+      });
+      sec.style.display = anyMatch || !ql ? 'block' : 'none';
+      const tDiv = sec.querySelector('.curr-topics');
+      if (tDiv) tDiv.innerHTML = topicsHtml;
+      if (ql && anyMatch) sec.classList.add('open');
+    });
+  };
+  return { render, toggle, askTopic, filter };
+})();
+
+// ══════════════════════════════════════════════════════
+//  HISTORY
+// ══════════════════════════════════════════════════════
+const History = (() => {
+  const getSessions = () => Store.get('ea_sessions', []);
+  const saveSession = (session) => {
+    const sessions = getSessions();
+    sessions.unshift(session);
+    Store.set('ea_sessions', sessions.slice(0, 50)); // keep last 50
+  };
+  const render = () => {
+    const el = document.getElementById('hist-scroll');
+    if (!el) return;
+    const sessions = getSessions();
+    if (!sessions.length) {
+      el.innerHTML = `<div class="hist-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>No history yet</h3><p>Start a study session and your chats will appear here for review.</p></div>`;
+      return;
+    }
+    // Group by date
+    const groups = {};
+    sessions.forEach(s => {
+      const d = new Date(s.ts);
+      const key = d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(s);
+    });
+    el.innerHTML = Object.entries(groups).map(([day, ss]) => `
+      <div class="hist-day-label">${day}</div>
+      ${ss.map(s => {
+        const subj = SUBJS.find(x=>x.id===s.sid) || {name:s.sid, icon:'ico-math', c:'#1565C0', bg:'#E3F2FD'};
+        const t = new Date(s.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        return `<div class="hist-session" onclick="History.resume('${s.id}')">
+          <div class="hist-ico" style="background:${subj.bg}">
+            <svg viewBox="0 0 28 28" fill="none" stroke="${subj.c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#${subj.icon}"/></svg>
+          </div>
+          <div class="hist-info">
+            <div class="hist-subj">${subj.name}</div>
+            <div class="hist-preview">${s.preview || 'Tap to review session'}</div>
+            <div class="hist-meta"><span class="hist-time">${t}</span><span class="hist-cnt">${s.msgCount} messages</span></div>
+          </div>
+          <button class="hist-session-del" onclick="event.stopPropagation();History.del('${s.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+        </div>`;
+      }).join('')}
+    `).join('');
+  };
+  const resume = (id) => {
+    const s = getSessions().find(x=>x.id===id);
+    if (!s) return;
+    const subj = SUBJS.find(x=>x.id===s.sid);
+    if (!subj) return;
+    App.pick(s.sid);
+    App.start(s.messages || []);
+    toast('Session resumed');
+  };
+  const del = (id) => {
+    const sessions = getSessions().filter(s=>s.id!==id);
+    Store.set('ea_sessions', sessions);
+    render();
+    toast('Session deleted');
+  };
+  const clearAll = () => {
+    if (!getSessions().length) { toast('No history to clear'); return; }
+    Store.set('ea_sessions', []);
+    render();
+    toast('All history cleared');
+  };
+  return { getSessions, saveSession, render, resume, del, clearAll };
+})();
+
+// ══════════════════════════════════════════════════════
+//  MAIN APP
+// ══════════════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════════════
+//  SETTINGS MODULE
+// ══════════════════════════════════════════════════════
+const Settings = (() => {
+  const defaults = {theme:'light',fontSize:14,smsMode:false,mathHints:true,lang:'en',quizAI:true,difficulty:'mixed'};
+  const get = () => Store.get('ea_settings', defaults);
+  const save = (patch) => { const s=get(); Store.set('ea_settings',{...s,...patch}); return {...s,...patch}; };
+
+  const init = () => {
+    const s = get();
+    applyTheme(s.theme);
+    applyFont(s.fontSize);
+    // sync API key status
+    const key = Store.get('ea_apikey','');
+    if (key) {
+      document.getElementById('api-key-status').textContent = 'Key saved ✓ — chat is ready';
+      document.getElementById('api-banner')?.classList.add('hidden');
+    }
+  };
+
+  const open = () => {
+    const s = get();
+    // Sync UI state
+    ['light','dark','blue','green'].forEach(t => {
+      document.getElementById('theme-'+t)?.classList.toggle('active', s.theme===t);
+    });
+    const fs = document.getElementById('font-slider');
+    if (fs) { fs.value = s.fontSize; }
+    document.getElementById('font-size-label').textContent = 'Size: '+s.fontSize+'px';
+    document.getElementById('sms-toggle')?.classList.toggle('on', s.smsMode);
+    document.getElementById('math-toggle')?.classList.toggle('on', s.mathHints);
+    document.getElementById('quiz-ai-toggle')?.classList.toggle('on', s.quizAI);
+    document.getElementById('quiz-mode-label').textContent = s.quizAI ? 'AI-Generated (dynamic)' : 'Static Question Bank';
+    document.getElementById('diff-label').textContent = {mixed:'Mixed (all levels)',easy:'Easy (C6 level)',medium:'Medium (B3 level)',hard:'Hard (A1 level)'}[s.difficulty]||'Mixed';
+    // Cache size
+    const cacheSize = Object.keys(Store.get('ea_c',{})).length;
+    document.getElementById('cache-size-label').textContent = 'Cached responses: '+cacheSize;
+    // API key
+    const key = Store.get('ea_apikey','');
+    document.getElementById('api-key-status').textContent = key ? 'Key saved ✓ — chat is ready' : 'Not set — chat will not work without this';
+    App.go('settings');
+  };
+
+  const setTheme = (t) => {
+    save({theme:t});
+    applyTheme(t);
+    ['light','dark','blue','green'].forEach(id => document.getElementById('theme-'+id)?.classList.toggle('active', id===t));
+    toast('Theme: '+t.charAt(0).toUpperCase()+t.slice(1));
+  };
+
+  const applyTheme = (t) => {
+    document.body.classList.remove('dark','theme-blue','theme-green');
+    if (t==='dark')  document.body.classList.add('dark');
+    if (t==='blue')  { document.body.classList.add('theme-blue'); applyAccent('#1565C0','#E3F2FD'); }
+    if (t==='green') { document.body.classList.add('theme-green'); applyAccent('#1B5E20','#E8F5E9'); }
+    if (t==='dark')  applyAccent('#3B82F6','#1E3A5F');
+    if (t==='light') applyAccent('#1565C0','#E3F2FD');
+  };
+
+  const applyAccent = (color, pale) => {
+    document.documentElement.style.setProperty('--blue', color);
+    document.documentElement.style.setProperty('--blue-pale', pale);
+  };
+
+  const setFont = (size) => {
+    save({fontSize:+size});
+    applyFont(+size);
+    const labels = {12:'Small (12px)',13:'Small-Medium (13px)',14:'Medium (14px)',15:'Large (15px)',16:'Large (16px)',17:'Extra Large (17px)',18:'Extra Large (18px)'};
+    document.getElementById('font-size-label').textContent = labels[size]||'Size: '+size+'px';
+  };
+
+  const applyFont = (size) => {
+    document.documentElement.style.setProperty('--chat-font-size', size+'px');
+    document.querySelectorAll('.bub, .md-p, .quiz-q-text, .curr-topic-item').forEach(el => {
+      el.style.fontSize = size+'px';
+    });
+  };
+
+  const toggleSMS = () => {
+    const s = save({smsMode:!get().smsMode});
+    document.getElementById('sms-toggle')?.classList.toggle('on', s.smsMode);
+    App.mode(s.smsMode ? 'sms' : 'rich');
+    toast(s.smsMode ? 'SMS mode on' : 'Full mode on');
+  };
+
+  const toggleMath = () => {
+    const s = save({mathHints:!get().mathHints});
+    document.getElementById('math-toggle')?.classList.toggle('on', s.mathHints);
+  };
+
+  const setLang = (lang) => {
+    save({lang});
+    const labels = {en:'English',pcm:'Nigerian Pidgin',yo:'Yoruba',ha:'Hausa',ig:'Igbo'};
+    document.getElementById('lang-label').textContent = labels[lang]||lang;
+    toast('Language: '+labels[lang]);
+  };
+
+  const toggleQuizMode = () => {
+    const s = save({quizAI:!get().quizAI});
+    document.getElementById('quiz-ai-toggle')?.classList.toggle('on', s.quizAI);
+    document.getElementById('quiz-mode-label').textContent = s.quizAI ? 'AI-Generated (dynamic)' : 'Static Question Bank';
+    toast(s.quizAI ? 'AI quiz mode on' : 'Static quiz mode on');
+  };
+
+  const setDifficulty = (d) => {
+    save({difficulty:d});
+    const labels = {mixed:'Mixed',easy:'Easy (C6 level)',medium:'Medium (B3 level)',hard:'Hard (A1 level)'};
+    document.getElementById('diff-label').textContent = labels[d]||d;
+  };
+
+  const saveApiKey = () => {
+    // Try both inputs (banner and settings screen)
+    const bannerInput = document.getElementById('api-key-input');
+    const settInput   = document.getElementById('sett-api-input');
+    const key = (settInput?.value || bannerInput?.value || '').trim();
+    if (!key) { toast('Please enter your API key'); return; }
+    if (!key.startsWith('sk-ant')) { toast('Invalid key — must start with sk-ant'); return; }
+    Store.set('ea_apikey', key);
+    if (bannerInput) bannerInput.value = '';
+    if (settInput)   settInput.value = '';
+    document.getElementById('api-banner')?.classList.add('hidden');
+    document.getElementById('api-key-status').textContent = 'Key saved ✓ — chat is ready';
+    toast('API key saved — chat is ready!');
+  };
+
+  const clearCache = () => {
+    Store.set('ea_c', {});
+    toast('Response cache cleared');
+    document.getElementById('cache-size-label').textContent = 'Cached responses: 0';
+  };
+
+  const clearHistory = () => {
+    Store.set('ea_sessions', []);
+    toast('Chat history cleared');
+  };
+
+  const getApiKey = () => Store.get('ea_apikey','');
+  const getLang   = () => get().lang || 'en';
+  const getDiff   = () => get().difficulty || 'mixed';
+  const isQuizAI  = () => get().quizAI !== false;
+
+  return { init, open, setTheme, setFont, toggleSMS, toggleMath, setLang, toggleQuizMode, setDifficulty, saveApiKey, clearCache, clearHistory, getApiKey, getLang, getDiff, isQuizAI };
+})();
+
+// ══════════════════════════════════════════════════════
+//  QUIZ MODULE  (Past-questions style timed practice)
+// ══════════════════════════════════════════════════════
+const Quiz = (() => {
+  let curSubj = null;
+  let questions = [];
+  let answers = {};
+  let timerEl = null;
+  let timerVal = 0;
+  let timerInt = null;
+  let quizActive = false;
+
+  // Per-subject question bank (5 per subject, WAEC-style)
+  const QB = {
+    math:[
+      {q:'If $\\alpha$ and $\\beta$ are the roots of $2x^2 - 5x + 3 = 0$, find $\\alpha\\beta$.',opts:['3/2','5/2','2/3','5/3'],ans:0,exp:'For $ax^2+bx+c=0$, product of roots $= \\frac{c}{a} = \\frac{3}{2}$.'},
+      {q:'Find the value of $x$ if $\\log_3(x+2) + \\log_3(x-2) = 2$.',opts:['x = √13','x = √5','x = 5','x = 13'],ans:0,exp:'$\\log_3[(x+2)(x-2)]=2 \\Rightarrow x^2-4=9 \\Rightarrow x=\\sqrt{13}$.'},
+      {q:'The sum of the first $n$ terms of an AP is $S_n = 3n^2 - n$. Find the 5th term.',opts:['26','29','23','31'],ans:0,exp:'$T_n = S_n - S_{n-1} = (3n^2-n)-(3(n-1)^2-(n-1)) = 6n-4$. So $T_5 = 30-4=26$.'},
+      {q:'A circle has equation $x^2+y^2-6x+4y-12=0$. Find its radius.',opts:['5','6','4','7'],ans:0,exp:'Complete the square: $(x-3)^2+(y+2)^2=12+9+4=25$. Radius $= 5$.'},
+      {q:'If $\\vec{a}=3\\hat{i}+4\\hat{j}$ and $\\vec{b}=5\\hat{i}-12\\hat{j}$, find $|\\vec{a}+\\vec{b}|$.',opts:['15','13','17','11'],ans:1,exp:'$\\vec{a}+\\vec{b}=8\\hat{i}-8\\hat{j}$. $|\\vec{a}+\\vec{b}|=\\sqrt{64+64}=\\sqrt{128}\\approx 11.3$. Closest: 13.'},
+    ],
+    physics:[
+      {q:'A body of mass 4 kg moves with velocity 5 m/s. Its kinetic energy is:',opts:['50 J','100 J','20 J','40 J'],ans:0,exp:'$KE = \\frac{1}{2}mv^2 = \\frac{1}{2}(4)(25) = 50 \\text{ J}$.'},
+      {q:'Which of the following correctly states Ohm\'s Law?',opts:['V = IR','I = VR','R = VI','V = I/R'],ans:0,exp:'Ohm\'s Law: $V = IR$, where V = voltage (V), I = current (A), R = resistance (Ω).'},
+      {q:'A wave has frequency 50 Hz and wavelength 4 m. Its speed is:',opts:['200 m/s','12.5 m/s','46 m/s','54 m/s'],ans:0,exp:'Wave speed $v = f\\lambda = 50 \\times 4 = 200 \\text{ m/s}$.'},
+      {q:'The half-life of a radioactive element is 8 days. What fraction remains after 24 days?',opts:['1/8','1/4','1/6','1/16'],ans:0,exp:'24 days = 3 half-lives. Fraction remaining $= (\\frac{1}{2})^3 = \\frac{1}{8}$.'},
+      {q:'An object is projected horizontally at 20 m/s from a height of 45 m. Time to hit the ground ($g=10$ m/s²):',opts:['3 s','4.5 s','2 s','9 s'],ans:0,exp:'$h = \\frac{1}{2}gt^2 \\Rightarrow 45 = 5t^2 \\Rightarrow t = 3 \\text{ s}$.'},
+    ],
+    chem:[
+      {q:'How many moles of atoms are in 48 g of carbon? (C = 12)',opts:['4 mol','6 mol','2 mol','12 mol'],ans:0,exp:'Moles $= \\frac{\\text{mass}}{\\text{molar mass}} = \\frac{48}{12} = 4 \\text{ mol}$.'},
+      {q:'Which of these is a homologous series with general formula $C_nH_{2n}$?',opts:['Alkenes','Alkanes','Alkynes','Alkanols'],ans:0,exp:'Alkenes: $C_nH_{2n}$. Alkanes: $C_nH_{2n+2}$. Alkynes: $C_nH_{2n-2}$.'},
+      {q:'In the electrolysis of dilute H₂SO₄, what is produced at the cathode?',opts:['Hydrogen gas','Oxygen gas','Sulphur dioxide','Water'],ans:0,exp:'At the cathode (negative electrode), H⁺ ions are discharged: $2H^+ + 2e^- \\rightarrow H_2(g)$.'},
+      {q:'Le Chatelier\'s principle states that when a system at equilibrium is disturbed, it will:',opts:['Shift to oppose the change','Shift to favour the change','Remain unchanged','Double the change'],ans:0,exp:'Le Chatelier: the system shifts to minimise the effect of the imposed change, restoring equilibrium.'},
+      {q:'The pH of a solution with $[H^+] = 10^{-3}$ mol/dm³ is:',opts:['3','11','-3','0.001'],ans:0,exp:'$pH = -\\log[H^+] = -\\log(10^{-3}) = 3$.'},
+    ],
+    bio:[
+      {q:'In a monohybrid cross between Tt × Tt, what is the phenotypic ratio?',opts:['3:1','1:2:1','1:1','2:1'],ans:0,exp:'Tt × Tt gives TT:Tt:tt = 1:2:1 genotypic. Phenotypic ratio of dominant:recessive = 3:1.'},
+      {q:'Which organelle is responsible for ATP production in aerobic respiration?',opts:['Mitochondria','Ribosome','Chloroplast','Nucleus'],ans:0,exp:'Mitochondria are the site of aerobic respiration (Krebs cycle & oxidative phosphorylation), producing ATP.'},
+      {q:'Osmosis is the movement of water molecules from a region of:',opts:['Low to high solute concentration','High to low solute concentration','Equal concentrations','High to low water concentration'],ans:0,exp:'Osmosis: water moves from high water potential (low solute) to low water potential (high solute) through a semi-permeable membrane.'},
+      {q:'The structure of DNA was first described by:',opts:['Watson and Crick','Mendel and Darwin','Pasteur and Lister','Fleming and Chain'],ans:0,exp:'Watson and Crick (1953) described the double-helix structure of DNA, using X-ray data from Franklin.'},
+      {q:'Which of the following is NOT a product of photosynthesis?',opts:['Carbon dioxide','Oxygen','Glucose','Water (by-product varies)'],ans:0,exp:'Photosynthesis: $6CO_2 + 6H_2O \\rightarrow C_6H_{12}O_6 + 6O_2$. CO₂ is a reactant, not a product.'},
+    ],
+    econ:[
+      {q:'When demand is price elastic, a rise in price will:',opts:['Decrease total revenue','Increase total revenue','Leave revenue unchanged','Double revenue'],ans:0,exp:'If PED > 1 (elastic), a price rise causes a proportionally larger fall in quantity demanded, reducing total revenue.'},
+      {q:'GDP differs from GNP in that GDP:',opts:['Excludes income earned abroad by nationals','Includes income earned abroad','Equals GNP always','Excludes government spending'],ans:0,exp:'GDP = value of output within a country\'s borders. GNP = GDP + net income earned abroad by nationals.'},
+      {q:'The law of diminishing marginal returns states that:',opts:['Adding more of a variable factor eventually reduces marginal output','Adding capital always reduces output','Fixed costs fall as output rises','Revenue falls as output rises'],ans:0,exp:'In the short run, adding more variable inputs (e.g. labour) to a fixed input (e.g. land) eventually causes marginal output to fall.'},
+      {q:'ECOWAS was established in:',opts:['1975','1963','1980','1991'],ans:0,exp:'ECOWAS (Economic Community of West African States) was established on 28 May 1975 in Lagos, Nigeria.'},
+      {q:'A normal good is one where:',opts:['Demand increases as income rises','Demand falls as income rises','Price and demand move in same direction','Supply falls as price rises'],ans:0,exp:'Normal good: income elasticity of demand > 0. As income rises, demand for normal goods rises.'},
+    ],
+    govt:[
+      {q:'The 1999 Nigerian Constitution operates a system of:',opts:['Federalism','Unitarism','Confederation','Parliamentary system'],ans:0,exp:'Nigeria\'s 1999 Constitution establishes a federal system with power shared between federal, state, and local governments.'},
+      {q:'Which arm of government interprets the law in Nigeria?',opts:['Judiciary','Legislature','Executive','Civil Service'],ans:0,exp:'The Judiciary (Supreme Court, Federal/State High Courts) interprets laws and the Constitution.'},
+      {q:'INEC stands for:',opts:['Independent National Electoral Commission','International Nigerian Electoral Council','Independent National Election Committee','Integrated National Electoral Commission'],ans:0,exp:'INEC = Independent National Electoral Commission, responsible for conducting elections in Nigeria.'},
+      {q:'The Berlin Conference of 1884-85 resulted in:',opts:['Partition of Africa among European powers','End of the slave trade','Formation of the OAU','Nigerian independence'],ans:0,exp:'The Berlin Conference divided Africa among European colonial powers without African representation.'},
+      {q:'Sovereignty means:',opts:['Supreme power of a state to govern itself without external interference','The right to vote','Power of the judiciary','Executive authority'],ans:0,exp:'Sovereignty is the supreme and independent authority of a state to govern itself both internally and externally.'},
+    ],
+    english:[
+      {q:'Choose the <strong>correct</strong> sentence:',opts:['The committee have reached their decision','The committee has reached its decision','The committee have reached its decision','The committee has reached their decision'],ans:1,exp:'"Committee" is a collective noun treated as singular in formal/standard usage. Correct: "The committee has reached its decision."'},
+      {q:'Identify the figure of speech: "The wind whispered through the trees."',opts:['Personification','Simile','Metaphor','Hyperbole'],ans:0,exp:'Personification — giving human qualities (whispering) to a non-human thing (wind).'},
+      {q:'The word "gregarious" means:',opts:['Fond of company; sociable','Solitary and withdrawn','Aggressive and hostile','Shy and timid'],ans:0,exp:'Gregarious means enjoying the company of others; sociable. From Latin "grex" (flock).'},
+      {q:'In the sentence "<u>Running fast</u>, he reached the finish line", the underlined phrase is a:',opts:['Participial phrase','Gerund phrase','Infinitive phrase','Prepositional phrase'],ans:0,exp:'"Running fast" is a participial phrase (present participle) — it modifies the subject "he". This is tested in WAEC English Paper 1 (Lexis & Structure).'},
+      {q:'Which is the correct plural of "criterion"?',opts:['Criteria','Criterions','Criterias','Criterion'],ans:0,exp:'"Criterion" is a Greek-origin word. Its plural is "criteria". Commonly tested in WAEC Lexis & Structure.'},
+    ],
+    acct:[
+      {q:'The double-entry principle means that every transaction:',opts:['Affects at least two accounts equally','Is recorded once in the ledger','Increases one account only','Affects the profit directly'],ans:0,exp:'Double-entry: every debit has a corresponding credit of equal value. Debit = Credit for every transaction.'},
+      {q:'A credit balance in a personal account (debtor) indicates:',opts:['The debtor has overpaid','The debtor still owes money','A bad debt','A provision'],ans:0,exp:'A credit balance in a debtor\'s account means the debtor has overpaid, creating a liability for the business.'},
+      {q:'Gross Profit = Net Sales minus:',opts:['Cost of Goods Sold','Operating expenses','Net expenses','Total expenses'],ans:0,exp:'Gross Profit = Net Sales - Cost of Goods Sold (COGS). Net Profit = Gross Profit - Operating Expenses.'},
+      {q:'Which of these is a current liability?',opts:['Bank overdraft','Long-term loan','Building','Motor vehicle'],ans:0,exp:'Bank overdraft is repayable on demand — a current liability. Long-term loans, buildings, and vehicles are not current.'},
+      {q:'Bank Reconciliation Statement is prepared to:',opts:['Reconcile cash book balance with bank statement balance','Record all bank transactions','Prepare the final accounts','Audit the bank'],ans:0,exp:'BRS reconciles differences between the cash book (company records) and bank statement (bank records) due to timing differences.'},
+    ],
+    hist:[
+      {q:'The Scramble for Africa was formalised at:',opts:['The Berlin Conference 1884-85','The Paris Peace Conference','The Congress of Vienna','The Treaty of Versailles'],ans:0,exp:'The Berlin Conference (1884-85) formalised the partition of Africa among European powers, setting rules for colonisation.'},
+      {q:'Nigeria gained independence from Britain in:',opts:['1960','1963','1914','1956'],ans:0,exp:'Nigeria gained independence on 1 October 1960. In 1963, Nigeria became a republic.'},
+      {q:'The Trans-Atlantic Slave Trade was formally abolished by Britain in:',opts:['1807','1833','1865','1791'],ans:0,exp:'Britain abolished the slave trade in 1807 (Slave Trade Act). Slavery itself was abolished in British colonies in 1833.'},
+      {q:'Pan-Africanism is associated with:',opts:['Kwame Nkrumah','Jomo Kenyatta','Nelson Mandela','Julius Nyerere'],ans:0,exp:'Kwame Nkrumah of Ghana was the foremost champion of Pan-Africanism and African unity.'},
+      {q:'The amalgamation of Northern and Southern Nigeria took place in:',opts:['1914','1900','1922','1951'],ans:0,exp:'On 1 January 1914, Lord Lugard amalgamated the Northern and Southern Protectorates into the Colony and Protectorate of Nigeria.'},
+    ],
+    chem_extra:[],
+    default:[
+      {q:'Which of the following is a compulsory WAEC subject?',opts:['English Language','Biology','Economics','Government'],ans:0,exp:'English Language and Mathematics are the only two compulsory subjects for all WAEC SSCE candidates.'},
+      {q:'WAEC stands for:',opts:['West African Examinations Council','West African Education Committee','Western Africa Exam Council','West Africa Examination Centre'],ans:0,exp:'WAEC = West African Examinations Council, established in 1952.'},
+    ]
+  };
+
+  // Fisher-Yates shuffle
+  const shuffle = (arr) => {
+    const a = [...arr];
+    for (let i=a.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  };
+  const getQ = (sid) => shuffle(QB[sid] || QB.default);
+
+  const render = () => {
+    const tabs = document.getElementById('quiz-subject-tabs');
+    const quizSubs = ['math','physics','chem','bio','econ','govt','english','acct','hist'];
+    if (tabs && !tabs.children.length) {
+      tabs.innerHTML = quizSubs.map((id,i) => {
+        const s = SUBJS.find(x=>x.id===id);
+        return `<div class="tchip${i===0?' active':''}" onclick="Quiz.selectSubj(this,'${id}')">${s?s.name:id}</div>`;
+      }).join('');
+      curSubj = quizSubs[0];
+    }
+    showQuizHome();
+  };
+
+  const selectSubj = (el, sid) => {
+    el.closest('.topics-row').querySelectorAll('.tchip').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    curSubj = sid;
+    stopTimer();
+    quizActive = false;
+    answers = {};
+    showQuizHome();
+  };
+
+  const showQuizHome = () => {
+    const subj = SUBJS.find(s=>s.id===curSubj) || {name:curSubj};
+    const qs = getQ(curSubj);
+    const scores = Store.get('ea_quiz_scores', {});
+    const best = scores[curSubj];
+    document.getElementById('quiz-score-badge').style.display = 'none';
+    document.getElementById('quiz-body').innerHTML = `
+      <div class="quiz-start">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <h3>${subj.name} Past Questions</h3>
+        <p>WAEC-style objective questions. Pick the correct answer — explanations shown after each attempt.</p>
+        ${best ? `<div style="margin-bottom:12px"><span class="quiz-timer">Best score: ${best.score}/${best.total}</span></div>` : ''}
+        <p style="font-size:12px;color:var(--t3);margin-bottom:16px">${qs.length} questions · timed · instant feedback</p>
+        <button class="btn btn-blue" onclick="Quiz.start()" style="max-width:240px;margin:0 auto">&nbsp; Start Quiz &nbsp;</button>
+      </div>`;
+  };
+
+  const start = async () => {
+    answers = {}; quizActive = true;
+    document.getElementById('quiz-body').innerHTML = '<div style="text-align:center;padding:40px 20px"><div style="width:44px;height:44px;border-radius:50%;border:3px solid var(--blue);border-top-color:transparent;animation:spin .8s linear infinite;margin:0 auto 14px"></div><p style="font-family:var(--f);font-size:14px;font-weight:700;color:var(--t2)">'+(Settings.isQuizAI() ? 'Generating fresh WAEC questions…' : 'Loading question bank…')+'</p></div>';
+    if (!document.querySelector('#spin-kf')) {
+      const st=document.createElement('style'); st.id='spin-kf'; st.textContent='@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(st);
+    }
+    if (Settings.isQuizAI() && Settings.getApiKey()) {
+      questions = await generateAIQuestions();
+    } else {
+      questions = getQ(curSubj);
+    }
+    if (!questions.length) { toast('Could not load questions — check API key'); showQuizHome(); return; }
+    timerVal = questions.length * 72;
+    renderQuestions();
+    startTimer();
+    document.getElementById('quiz-scroll').scrollTop = 0;
+  };
+
+  const generateAIQuestions = async () => {
+    const subj = SUBJS.find(s=>s.id===curSubj)||{name:curSubj};
+    const diff = Settings.getDiff();
+    const diffDesc = {mixed:'a mix of easy, medium and hard',easy:'easy (suitable for C6 credit pass)',medium:'medium difficulty (B3 level)',hard:'challenging (A1 distinction level)'}[diff]||'mixed difficulty';
+    const prompt = `Generate exactly 5 WAEC-style Paper 1 objective questions for ${subj.name}.
+Requirements:
+- ${diffDesc} questions
+- Each question MUST follow this EXACT JSON format
+- Use LaTeX for ALL math: inline $...$, display $...$
+- Base questions strictly on the 2026 WAEC ${subj.name} syllabus
+- Make questions realistic WAEC past-question style
+
+Return ONLY a JSON array, no other text:
+[
+  {
+    "q": "Question text here (use LaTeX for math)",
+    "opts": ["Option A", "Option B", "Option C", "Option D"],
+    "ans": 0,
+    "exp": "Brief explanation of why the answer is correct"
+  }
+]
+
+The "ans" field is the zero-based index of the correct option.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':Settings.getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
+      });
+      const data = await res.json();
+      const text = data.content?.[0]?.text || '';
+      const jsonStr = text.replace(/```json|```/g,'').trim();
+      const parsed = JSON.parse(jsonStr);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch(e) { console.warn('AI quiz gen failed, using static bank:', e.message); }
+    return getQ(curSubj); // fallback
+  };
+
+  const renderQuestions = () => {
+    const badge = document.getElementById('quiz-score-badge');
+    badge.style.display = 'inline-block';
+    badge.textContent = 'In progress';
+    document.getElementById('quiz-body').innerHTML =
+      questions.map((q,i) => `
+        <div class="quiz-card" id="qcard-${i}">
+          <div class="quiz-q-num">Question ${i+1} of ${questions.length}</div>
+          <div class="quiz-q-text">${q.q}</div>
+          <div class="quiz-opts">
+            ${q.opts.map((o,j) => `<button class="quiz-opt" id="qopt-${i}-${j}" onclick="Quiz.answer(${i},${j})">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${i}"><strong>Explanation:</strong> ${q.exp}</div>
+        </div>`).join('') +
+      `<div id="quiz-submit-row" style="margin-top:8px;display:flex;gap:10px">
+        <button class="btn" style="background:var(--bg);color:var(--t2);border:1.5px solid var(--bdr)" onclick="Quiz.showQuizHome()">← Back</button>
+        <button class="btn btn-blue" onclick="Quiz.finish()">Submit Quiz</button>
+      </div>`;
+    // Render math in questions
+    setTimeout(() => {
+      questions.forEach((_,i) => {
+        renderMath(document.getElementById(`qcard-${i}`));
+      });
+    }, 100);
+  };
+
+  const answer = (qi, optIdx) => {
+    if (answers[qi] !== undefined) return; // already answered
+    answers[qi] = optIdx;
+    const q = questions[qi];
+    const isCorrect = optIdx === q.ans;
+    // Lock all opts for this question
+    for (let j=0; j<q.opts.length; j++) {
+      const el = document.getElementById(`qopt-${qi}-${j}`);
+      if (!el) continue;
+      el.classList.add('locked');
+      if (j === q.ans) el.classList.add('correct');
+      else if (j === optIdx && !isCorrect) el.classList.add('wrong');
+    }
+    // Show explanation
+    const exp = document.getElementById(`qexp-${qi}`);
+    if (exp) { exp.classList.add('show'); renderMath(exp); }
+    // Update badge
+    const answered = Object.keys(answers).length;
+    const correct = Object.values(answers).filter((a,i) => a===questions[i].ans).length;
+    const badge = document.getElementById('quiz-score-badge');
+    if (badge) badge.textContent = `${correct}/${answered}`;
+  };
+
+  const finish = () => {
+    stopTimer();
+    quizActive = false;
+    const correct = Object.values(answers).filter((a,i) => a===questions[i].ans).length;
+    const total = questions.length;
+    const pct = Math.round(correct/total*100);
+    const grade = pct>=75?'A1':pct>=70?'B2':pct>=65?'B3':pct>=60?'C4':pct>=55?'C5':pct>=50?'C6':pct>=45?'D7':pct>=40?'E8':'F9';
+    // Save score
+    const scores = Store.get('ea_quiz_scores', {});
+    if (!scores[curSubj] || correct > scores[curSubj].score) {
+      scores[curSubj] = {score:correct, total, pct, grade, ts:Date.now()};
+      Store.set('ea_quiz_scores', scores);
+    }
+    // Save to progress
+    const prog = Store.get('ea_progress', {});
+    if (!prog[curSubj]) prog[curSubj] = {quizzes:0, totalCorrect:0, totalQ:0};
+    prog[curSubj].quizzes++;
+    prog[curSubj].totalCorrect += correct;
+    prog[curSubj].totalQ += total;
+    Store.set('ea_progress', prog);
+
+    const badge = document.getElementById('quiz-score-badge');
+    if (badge) { badge.textContent = grade+' ('+correct+'/'+total+')'; }
+
+    // Prepend result banner
+    const body = document.getElementById('quiz-body');
+    const banner = document.createElement('div');
+    banner.className = 'quiz-result-banner';
+    const emoji = pct>=60?'🎉':pct>=40?'💪':'📚';
+    banner.innerHTML = `<div style="font-size:36px;margin-bottom:8px">${emoji}</div>
+      <h2>${pct}% — ${grade}</h2>
+      <p>You got ${correct} out of ${total} questions correct.</p>
+      <p style="margin-top:6px;font-size:12px;opacity:.85">${pct>=60?'Credit achieved! Well done.':pct>=40?'Keep studying — you are close.':'Review the explanations below and try again.'}</p>
+      <div style="display:flex;gap:10px;margin-top:14px;justify-content:center">
+        <button onclick="Quiz.showQuizHome()" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-family:var(--f);font-weight:800;font-size:13px;padding:9px 18px;border-radius:10px;cursor:pointer">← Main Menu</button>
+        <button onclick="Quiz.start()" style="background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.45);color:#fff;font-family:var(--f);font-weight:800;font-size:13px;padding:9px 18px;border-radius:10px;cursor:pointer">Try Again ↺</button>
+      </div>`;
+    // Remove submit button row
+    const submitRow = document.getElementById('quiz-submit-row');
+    if (submitRow) submitRow.remove();
+    body.prepend(banner);
+    body.scrollIntoView({behavior:'smooth', block:'start'});
+  };
+
+  const startTimer = () => {
+    const el = document.querySelector('.quiz-timer');
+    if (!el) return;
+    timerInt = setInterval(() => {
+      timerVal--;
+      const m = Math.floor(timerVal/60), s = timerVal%60;
+      el.textContent = `⏱ ${m}:${String(s).padStart(2,'0')}`;
+      if (timerVal <= 30) el.classList.add('urgent');
+      if (timerVal <= 0) { clearInterval(timerInt); finish(); }
+    }, 1000);
+  };
+
+  const stopTimer = () => { if (timerInt) { clearInterval(timerInt); timerInt=null; } };
+
+  return { render, selectSubj, start, answer, finish };
+})();
+
+// ══════════════════════════════════════════════════════
+//  DASHBOARD MODULE  (Impact metrics for NGO/Govt)
+// ══════════════════════════════════════════════════════
+const Dashboard = (() => {
+  const render = () => {
+    const sessions  = History.getSessions();
+    const progress  = Store.get('ea_progress', {});
+    const quizScore = Store.get('ea_quiz_scores', {});
+    const user      = Store.get('ea_user');
+
+    // KPIs
+    const totalSess = sessions.length;
+    const totalQs   = sessions.reduce((a,s)=>a+(s.msgCount||0),0);
+    const uniqueSubs = new Set(sessions.map(s=>s.sid)).size;
+    const quizCount  = Object.values(progress).reduce((a,p)=>a+(p.quizzes||0),0);
+    const avgQuizPct = quizCount > 0
+      ? Math.round(Object.values(progress).reduce((a,p)=>a+(p.totalQ?p.totalCorrect/p.totalQ*100:0),0) / Object.keys(progress).length)
+      : 0;
+
+    const kpis = [
+      {n:totalSess,  l:'Study Sessions',  c:'#1565C0'},
+      {n:totalQs,    l:'Questions Asked',  c:'#2E7D32'},
+      {n:uniqueSubs, l:'Subjects Covered', c:'#6A1B9A'},
+      {n:quizCount,  l:'Quizzes Taken',    c:'#C62828'},
+    ];
+    document.getElementById('dash-kpis').innerHTML = kpis.map(k=>
+      `<div class="kpi-card" style="border-left-color:${k.c}">
+        <div class="kpi-n" style="color:${k.c}">${k.n}</div>
+        <div class="kpi-l">${k.l}</div>
+      </div>`).join('');
+
+    // Subject bars
+    const subjCounts = {};
+    sessions.forEach(s=>{ subjCounts[s.sid]=(subjCounts[s.sid]||0)+1; });
+    const maxCount = Math.max(...Object.values(subjCounts), 1);
+    const subjHTML = Object.entries(subjCounts).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([sid,cnt])=>{
+      const s = SUBJS.find(x=>x.id===sid)||{name:sid,c:'#1565C0'};
+      return `<div class="subj-bar-row">
+        <div class="subj-bar-name">${s.name}</div>
+        <div class="subj-bar-track"><div class="subj-bar-fill" style="width:${Math.round(cnt/maxCount*100)}%;background:${s.c}"></div></div>
+        <div class="subj-bar-cnt">${cnt}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('dash-subjects').innerHTML = subjHTML ||
+      '<p style="color:var(--t3);font-size:13px;text-align:center;padding:20px">No study sessions yet</p>';
+
+    // Quiz performance table
+    const quizRows = Object.entries(quizScore).map(([sid, sc])=>{
+      const s = SUBJS.find(x=>x.id===sid)||{name:sid};
+      const grade = sc.pct>=75?'A1':sc.pct>=70?'B2':sc.pct>=65?'B3':sc.pct>=60?'C4':sc.pct>=50?'C6':'F9';
+      const col = sc.pct>=50?'#2E7D32':'#C62828';
+      return `<div style="background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);border:1px solid var(--bdr)">
+        <div style="flex:1;font-family:var(--f);font-size:13px;font-weight:700;color:var(--text)">${s.name}</div>
+        <div style="font-family:var(--f);font-size:13px;font-weight:800;color:${col}">${sc.pct}%</div>
+        <div style="background:${sc.pct>=50?'#E8F5E9':'#FFEBEE'};color:${col};font-family:var(--f);font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px">${grade}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('dash-quiz-perf').innerHTML = quizRows ||
+      '<p style="color:var(--t3);font-size:13px;text-align:center;padding:20px">Take a quiz to see your performance</p>';
+
+    // 7-day activity chart
+    const now = Date.now();
+    const dayMs = 86400000;
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const bars = Array.from({length:7}, (_,i)=>{
+      const dayStart = now - (6-i)*dayMs;
+      const dayEnd   = dayStart + dayMs;
+      const cnt = sessions.filter(s => s.ts >= dayStart && s.ts < dayEnd).length;
+      return {day: days[new Date(dayStart).getDay()], cnt};
+    });
+    const maxBar = Math.max(...bars.map(b=>b.cnt), 1);
+    document.getElementById('dash-activity').innerHTML =
+      `<div class="act-bar">
+        ${bars.map(b=>`<div class="act-bar-col">
+          <div class="act-bar-fill" style="height:${Math.round(b.cnt/maxBar*52)+3}px"></div>
+          <div class="act-bar-label">${b.day}</div>
+        </div>`).join('')}
+      </div>`;
+
+    // dots
+    const dd = document.getElementById('dd');
+    const dl = document.getElementById('dl');
+    if (dd) dd.className = 'cdot'+(navigator.onLine?' on':'');
+    if (dl) dl.textContent = navigator.onLine ? 'Online' : 'Offline';
+  };
+
+  const exportReport = () => {
+    const user = Store.get('ea_user') || {};
+    const sessions = History.getSessions();
+    const progress = Store.get('ea_progress', {});
+    const quizScores = Store.get('ea_quiz_scores', {});
+    const report = {
+      generated: new Date().toISOString(),
+      student: { name: user.name || 'Anonymous', email: user.email || '' },
+      summary: {
+        totalSessions: sessions.length,
+        totalQuestionsAsked: sessions.reduce((a,s)=>a+(s.msgCount||0),0),
+        uniqueSubjects: new Set(sessions.map(s=>s.sid)).size,
+        quizzesTaken: Object.values(progress).reduce((a,p)=>a+(p.quizzes||0),0),
+      },
+      subjectBreakdown: Object.fromEntries(
+        [...new Set(sessions.map(s=>s.sid))].map(sid => {
+          const subj = SUBJS.find(x=>x.id===sid)||{name:sid};
+          const subsessions = sessions.filter(s=>s.sid===sid);
+          const quiz = quizScores[sid];
+          return [subj.name, {
+            sessions: subsessions.length,
+            messages: subsessions.reduce((a,s)=>a+(s.msgCount||0),0),
+            quizBestScore: quiz ? quiz.pct+'%' : 'Not taken',
+            quizGrade: quiz ? (quiz.pct>=75?'A1':quiz.pct>=70?'B2':quiz.pct>=65?'B3':quiz.pct>=60?'C4':quiz.pct>=50?'C6':'F9') : '-',
+          }];
+        })
+      ),
+      appInfo: { version: 'EduAI WAEC 2026 v3.0', curriculum: '2026 WAEC SSCE' }
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `EduAI_Impact_Report_${user.name||'student'}_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    toast('Impact report downloaded');
+  };
+
+  return { render, exportReport };
+})();
+
+
+const App = (() => {
+  let cur = 'onboard';
+  let sel = null;
+  let curMode = 'rich';
+  let online = navigator.onLine;
+  let waiting = false;
+  let queue = [], cache = {}, hist = [];
+  let sessionId = null;
+  let sessionMsgCount = 0;
+  let sessionPreview = '';
+
+  const ld = () => {
+    cache = Store.get('ea_c', {});
+    queue = Store.get('ea_q', []);
+  };
+  const sv = () => {
+    Store.set('ea_c', cache);
+    Store.set('ea_q', queue);
+  };
+
+  const init = () => {
+    ld();
+    // Check if already logged in
+    const user = Store.get('ea_user');
+    if (user) {
+      afterLogin(true);
+    } else {
+      // Show onboarding if first visit, else auth
+      const seen = Store.get('ea_ob_seen');
+      if (seen) { go('auth'); } else { go('onboard'); }
+    }
+    Settings.init();
+    // Connectivity
+    window.addEventListener('online',  () => { online=true;  dots(); if(queue.length) flush(); });
+    window.addEventListener('offline', () => { online=false; dots(); });
+    dots();
+    // Input auto-resize
+    const qi = document.getElementById('qi');
+    qi.addEventListener('input', () => { qi.style.height='auto'; qi.style.height=Math.min(qi.scrollHeight,108)+'px'; });
+    qi.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+    // Build static sections
+    buildHome();
+    buildSubjects();
+    Curriculum.render();
+  };
+
+  const afterLogin = (silent=false) => {
+    Store.set('ea_ob_seen', true);
+    const user = Store.get('ea_user');
+    if (user) {
+      const h = new Date().getHours();
+      const greet = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+      document.getElementById('greet-line').textContent = greet+', '+user.name.split(' ')[0];
+      document.getElementById('greet-name').textContent = 'WAEC 2026 - Let\'s study!';
+      // Account screen
+      document.getElementById('acct-name').textContent = user.name;
+      document.getElementById('acct-email').textContent = user.email;
+      document.getElementById('acct-av').textContent = user.name.charAt(0).toUpperCase();
+    }
+    updateStats();
+    buildContinue();
+    go('home');
+  };
+
+  const updateStats = () => {
+    const sessions = History.getSessions();
+    document.getElementById('stat-sessions').textContent = sessions.length;
+    const totalQ = sessions.reduce((a,s) => a + (s.msgCount||0), 0);
+    document.getElementById('stat-questions').textContent = totalQ;
+    const uniqueSubjs = new Set(sessions.map(s=>s.sid)).size;
+    document.getElementById('stat-subjects').textContent = uniqueSubjs;
+  };
+
+  const dots = () => {
+    ['od','hd'].forEach(id => { const el=document.getElementById(id); if(el) el.className='cdot'+(online?' on':''); });
+    ['ol','hl'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=online?'Online':'Offline'; });
+    const csd=document.getElementById('csd'); if(csd) csd.className='chat-sdot'+(online?' on':'');
+    const cst=document.getElementById('cst'); if(cst) cst.textContent=online?'Online · AI active':'Offline · responses cached';
+  };
+
+  const SCREEN_ORDER = ['onboard','auth','home','subjects','curriculum','history','quiz','dashboard','settings','chat','account'];
+  const go = (name) => {
+    const ti = SCREEN_ORDER.indexOf(name);
+    document.querySelectorAll('.screen').forEach(el => {
+      const sid = el.id.replace('sc-','');
+      const si = SCREEN_ORDER.indexOf(sid);
+      el.classList.remove('hidden','back-out');
+      if (sid !== name) el.classList.add(si < ti ? 'back-out' : 'hidden');
+    });
+    const bn = document.getElementById('bnav');
+    if (bn) bn.classList.toggle('hidden', !['home','subjects','curriculum','history','quiz','dashboard','account','settings'].includes(name));
+    cur = name;
+    // Trigger renders on navigation
+    if (name === 'history')   { History.render(); updateStats(); }
+    if (name === 'curriculum') Curriculum.render();
+    if (name === 'quiz')       Quiz.render();
+    if (name === 'dashboard')  Dashboard.render();
+    if (name === 'settings')   Settings.open();
+    if (name === 'account')    updateStats();
+  };
+
+  const nav = (btn, dest) => {
+    document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+    btn.classList.add('active');
+    go(dest);
+  };
+
+  const getSel = () => sel;
+
+  const mkIco = (iconId, color, bg, sz=28) =>
+    `<svg width="${sz}" height="${sz}" viewBox="0 0 28 28" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#${iconId}"/></svg>`;
+
+  const buildHome = () => {
+    const tc = document.getElementById('tchips');
+    if (tc) tc.innerHTML = ['ALL SUBJECTS','SCIENCES','ARTS & HUMANITIES','COMMERCIAL','LANGUAGES'].map((c,i)=>
+      `<div class="tchip${i===0?' active':''}" onclick="this.parentElement.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${c}</div>`
+    ).join('');
+    const hsg = document.getElementById('hsgrid');
+    if (hsg) hsg.innerHTML = SUBJS.slice(0,6).map(s => {
+      const n = Object.keys(cache).filter(k=>k.startsWith(s.id+'_')).length;
+      return `<div class="home-scard" style="--sc:${s.c}" onclick="App.quick('${s.id}')">
+        ${n>0?`<span class="cached-dot">✓ ${n}</span>`:''}
+        <div style="width:44px;height:44px;border-radius:12px;background:${s.bg};display:flex;align-items:center;justify-content:center">${mkIco(s.icon,s.c,s.bg,24)}</div>
+        <div class="home-scard-name">${s.name}</div>
+        <div class="home-scard-sub">${s.paper.split('+')[0].trim()}</div>
+      </div>`;
+    }).join('');
+  };
+
+  const buildContinue = () => {
+    const sessions = History.getSessions().slice(0,3);
+    const cl = document.getElementById('clist');
+    if (!cl) return;
+    if (!sessions.length) {
+      cl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--t3);font-family:var(--f);font-size:13px">Start a session to track progress</div>`;
+      return;
+    }
+    cl.innerHTML = sessions.map(s => {
+      const subj = SUBJS.find(x=>x.id===s.sid) || {name:s.sid,icon:'ico-math',c:'#1565C0',bg:'#E3F2FD'};
+      return `<div class="ccard" onclick="App.quick('${s.sid}')">
+        <div style="width:44px;height:44px;border-radius:12px;background:${subj.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">${mkIco(subj.icon,subj.c,subj.bg,22)}</div>
+        <div class="ccard-info">
+          <div class="ccard-name">${subj.name}</div>
+          <div class="ccard-sub">${s.msgCount} messages · ${new Date(s.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>
+          <div class="pbar"><div class="pfill" style="width:${Math.min(100,s.msgCount*10)}%"></div></div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>`;
+    }).join('');
+  };
+
+  const buildSubjects = (filter='all') => {
+    const g = document.getElementById('stgrid'); if(!g) return;
+    const list = filter==='all' ? SUBJS : SUBJS.filter(s=>s.track===filter);
+    g.innerHTML = list.map(s =>
+      `<div class="stile" id="t_${s.id}" onclick="App.pick('${s.id}')">
+        <div class="tile-ico" style="background:${s.bg}">${mkIco(s.icon,s.c,s.bg,24)}</div>
+        <div class="stile-name">${s.name}</div>
+      </div>`
+    ).join('');
+  };
+
+  const pick = (id) => {
+    sel = SUBJS.find(s=>s.id===id);
+    document.querySelectorAll('.stile').forEach(t=>t.classList.remove('sel'));
+    document.getElementById('t_'+id)?.classList.add('sel');
+    const b=document.getElementById('nxtbtn');
+    if(b){b.disabled=false;b.textContent=`Start ${sel.name} ›`;}
+  };
+
+  const mode = (m) => {
+    curMode = m;
+    document.getElementById('mf')?.classList.toggle('active',m==='rich');
+    document.getElementById('ms')?.classList.toggle('active',m==='sms');
+  };
+
+  const quick = (id, preAsk=null) => {
+    pick(id);
+    start(null, preAsk);
+  };
+
+  const start = (prevMessages=null, preAsk=null) => {
+    if (!sel) return;
+    // New session
+    sessionId = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    sessionMsgCount = 0; sessionPreview = '';
+    hist = prevMessages || [];
+    document.getElementById('cav').style.background = sel.bg;
+    document.getElementById('cav').innerHTML = mkIco(sel.icon, sel.c, sel.bg, 22);
+    document.getElementById('cname').textContent = sel.name;
+    document.getElementById('smsbadge').classList.toggle('show', curMode==='sms');
+    document.getElementById('msgs').innerHTML = '';
+    if (!prevMessages?.length) addMsg('ai', getWelcome());
+    else prevMessages.forEach(m => { if(m.role==='user') addMsg('user',m.content); else addMsg('ai',m.content); });
+    renderChips();
+    go('chat');
+    if (preAsk) { setTimeout(()=>{ document.getElementById('qi').value=preAsk; send(); }, 400); }
+  };
+
+  const getWelcome = () => curMode==='sms'
+    ? `WAEC 2026 tutor - ${sel.name}. ${sel.paper.split('+')[0].trim()}. Ask questions.`
+    : `Hello! I'm your **${sel.name}** WAEC 2026 tutor.\n\n**Paper:** ${sel.paper}\n\nEvery answer I give is grounded in the 2026 WAEC syllabus — I'll tell you which paper each topic is tested in, and flag patterns that repeat in past questions.\n\n✅ Works offline · ✅ KaTeX math notation · ✅ WAEC-aligned\n\nWhat would you like to study today?`;
+
+  const addMsg = (role, rawText, opt={}) => {
+    const msgs = document.getElementById('msgs');
+    const isU = role==='user';
+    const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const tags = [opt.cached?'<span class="ctag">✓ cached</span>':'',opt.queued?'<span class="qtag">queued</span>':''].filter(Boolean).join(' ');
+    const d = document.createElement('div');
+    d.className = 'mrow '+role;
+    const bubHtml = isU ? rawText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : fmtAI(rawText);
+    d.innerHTML = `
+      <div class="mav ${isU?'usr-a':'ai-a'}">${isU?'U':'<svg viewBox="0 0 24 24" stroke="var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.67 3.47 2 2 0 0 1 3.64 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.77A16 16 0 0 0 14 14.94l.81-.81a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16.5z"/></svg>'}</div>
+      <div class="mcont">
+        <div class="bub ${isU?'usr-b':'ai-b'}">${bubHtml}</div>
+        <div class="mtime">${t} ${tags}</div>
+      </div>`;
+    msgs.appendChild(d);
+    if (!isU) renderMath(d.querySelector('.bub'));
+    msgs.scrollTop = msgs.scrollHeight;
+    sessionMsgCount++;
+    if (isU && !sessionPreview) sessionPreview = rawText.slice(0,60);
+  };
+
+  const showT = () => {
+    const msgs = document.getElementById('msgs');
+    const d = document.createElement('div'); d.className='trow'; d.id='typ';
+    d.innerHTML = `<div class="mav ai-a"><svg viewBox="0 0 24 24" stroke="var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.67 3.47 2 2 0 0 1 3.64 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.77A16 16 0 0 0 14 14.94l.81-.81a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16.5z"/></svg></div>
+      <div class="tbub"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+    msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+  };
+  const hideT = () => document.getElementById('typ')?.remove();
+
+  const renderChips = () => {
+    const c = document.getElementById('qchips'); if(!sel||!c) return;
+    c.innerHTML = sel.chips.map(p => `<div class="qc" onclick="App.chip('${p.replace(/'/g,"\\'")}');">${p}</div>`).join('');
+  };
+  const chip = (t) => { document.getElementById('qi').value=t; send(); };
+
+  const send = async () => {
+    if (waiting) return;
+    const qi = document.getElementById('qi');
+    const text = qi.value.trim(); if(!text) return;
+    qi.value=''; qi.style.height='auto';
+    addMsg('user', text);
+    hist.push({role:'user', content:text});
+    Store.set('ea_q', queue);
+    if (!online) { enq(text); return; }
+    await fetchAnswer(text);
+  };
+
+  const fetchAnswer = async (q) => {
+    const k = `${sel.id}_${q.toLowerCase().replace(/\s+/g,'_').slice(0,55)}`;
+    if (cache[k]) { addMsg('ai', cache[k], {cached:true}); hist.push({role:'assistant',content:cache[k]}); saveSess(); return; }
+    waiting=true; document.getElementById('sbtn').disabled=true; showT();
+    try {
+      const sys = curMode==='sms'
+        ? `You are a concise WAEC 2026 SSCE tutor for ${sel.name}. SMS MODE: max 200 chars plain text. No LaTeX. Only key WAEC syllabus facts.`
+        : `You are EduAI, an expert WAEC 2026 SSCE tutor for Nigerian SS3 students studying ${sel.name}.
+
+WAEC EXAM CONTEXT:
+${WAEC_EXAM_KB}
+
+SUBJECT SYLLABUS — ${sel.name.toUpperCase()}:
+${getSubjKB(sel.id)}
+
+PAPER STRUCTURE: ${sel.paper}
+
+RULES:
+- Ground EVERY answer in the 2026 WAEC syllabus above.
+- State which Paper (1=OBJ / 2=Theory / 3=Practical) the topic is tested in.
+- Flag topics that commonly repeat in WAEC past questions.
+- Use Nigerian context in examples where relevant.
+- For out-of-syllabus questions, redirect to the closest WAEC topic.
+
+MATH NOTATION — STRICT:
+- ALL math MUST use LaTeX. Inline: $expression$ — Display/block: $$expression$$
+- Fractions: \\frac{a}{b} — NEVER write a/b for proper fractions
+- Roots: \\sqrt{x}, \\sqrt[n]{x}
+- Powers: x^{2}, e^{x}  
+- Integrals: \\int_{a}^{b} f(x)\\,dx
+- Sums: \\sum_{i=1}^{n}
+- Derivatives: \\frac{dy}{dx}
+- Greek: \\alpha \\beta \\pi \\theta \\Delta \\Sigma
+- Quadratic formula: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+- Matrices: use \\begin{pmatrix}...\\end{pmatrix}
+
+FORMAT:
+- "Step 1:", "Step 2:" for worked solutions
+- **bold** for key WAEC terms
+- Mention the specific WAEC topic section
+- End with one WAEC-style practice question`;
+
+      const apiKey = Settings.getApiKey();
+      if (!apiKey) {
+        hideT();
+        document.getElementById('api-banner')?.classList.remove('hidden');
+        addMsg('ai', '**API key required.**\n\nTo use the AI tutor, you need a free Anthropic API key.\n\nStep 1: Go to [console.anthropic.com](https://console.anthropic.com)\nStep 2: Create a free account\nStep 3: Copy your API key (starts with sk-ant-)\nStep 4: Paste it in the banner above or in **Settings → API Key**\n\nYour key is stored only on your device — never sent anywhere except Anthropic.');
+        waiting=false; document.getElementById('sbtn').disabled=false;
+        return;
+      }
+      const langInstr = Settings.getLang() !== 'en' ? {en:'',pcm:'\nRespond in Nigerian Pidgin English.',yo:'\nRespond in Yoruba language.',ha:'\nRespond in Hausa language.',ig:'\nRespond in Igbo language.'}[Settings.getLang()] : '';
+      const res = await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:curMode==='sms'?200:1100,system:sys+langInstr,messages:hist.slice(-12)})
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(()=>({}));
+        const errMsg = errData?.error?.message || 'API error '+res.status;
+        if (res.status===401) { Store.del('ea_apikey'); document.getElementById('api-banner')?.classList.remove('hidden'); document.getElementById('api-key-status').textContent='Invalid key — please re-enter'; }
+        throw new Error(errMsg);
+      }
+      const data = await res.json();
+      const ans = data.content?.[0]?.text || 'Sorry, could not process that. Please try again.';
+      hideT(); addMsg('ai', ans);
+      cache[k]=ans; hist.push({role:'assistant',content:ans});
+      sv(); saveSess();
+    } catch(e) {
+      hideT(); enq(q);
+    }
+    waiting=false; document.getElementById('sbtn').disabled=false;
+  };
+
+  const saveSess = () => {
+    if (!sessionId || !sel) return;
+    // Update existing or create new session record
+    const sessions = History.getSessions();
+    const idx = sessions.findIndex(s=>s.id===sessionId);
+    const record = {id:sessionId,sid:sel.id,ts:Date.now(),msgCount:sessionMsgCount,preview:sessionPreview,messages:hist.slice(-20)};
+    if (idx>=0) sessions[idx]=record; else sessions.unshift(record);
+    Store.set('ea_sessions', sessions.slice(0,50));
+    buildContinue();
+  };
+
+  const enq = (text) => {
+    queue.push({sid:sel.id,text,ts:Date.now()}); sv(); updQ();
+    addMsg('ai', 'You\'re offline. Question queued — I\'ll answer when you reconnect.');
+  };
+  const updQ = () => {
+    const el=document.getElementById('oq'),qc=document.getElementById('qcnt'),qt=document.getElementById('qtxt');
+    if(queue.length>0){el.classList.remove('hidden');qc.textContent=queue.length;qt.textContent=`question${queue.length>1?'s':''} queued`;}
+    else el.classList.add('hidden');
+  };
+  const flush = async () => {
+    if(!queue.length) return;
+    const qs=[...queue]; queue=[]; sv(); updQ();
+    addMsg('ai',`Back online! Processing ${qs.length} queued question${qs.length>1?'s':''}…`);
+    for(const q of qs){await fetchAnswer(q.text);await new Promise(r=>setTimeout(r,400));}
+  };
+
+  const practice = () => {
+    const prompts = {
+      math:`Generate 3 WAEC Paper 2 Maths questions: (1) a quadratic using $$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$, (2) a mensuration problem with \\frac, (3) a trigonometry problem. Show questions only with LaTeX. Hints only — no solutions.`,
+      physics:`Give 3 WAEC Physics Paper 2 questions using proper LaTeX: one Newton's laws, one Ohm's law circuit, one waves calculation.`,
+      chem:`Give 3 WAEC Chemistry Paper 2 questions: one mole calculation with \\frac, one organic chemistry, one equilibrium. Use LaTeX throughout.`,
+      bio:`Give 3 WAEC Biology Paper 2 questions: one genetics (Punnett square description), one photosynthesis equation, one kidney/excretion.`,
+      econ:`Give 3 WAEC Economics Paper 2 essay questions on demand & supply (with diagram description), national income, and monetary policy.`,
+      acct:`Generate a WAEC-style Financial Accounting question: prepare a Trading, Profit & Loss Account and Balance Sheet from a given Trial Balance (include realistic Nigerian company figures).`,
+      default:`Give 3 WAEC-style practice questions for ${sel?.name||'this subject'} strictly from the 2026 syllabus. Label each with Paper number.`
+    };
+    document.getElementById('qi').value = prompts[sel?.id]||prompts.default;
+    send();
+  };
+
+  return { init, go, nav, afterLogin, getSel, pick, mode, quick, start, send, chip, practice, buildSubjects };
+})();
+
+// Boot
+document.addEventListener('DOMContentLoaded', App.init);
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
