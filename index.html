@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-<title>EduAI — 2026 WAEC SSCE Tutor</title>
+<title>Eduai — 2026 WAEC SSCE Tutor</title>
 <style>
 :root{
   --blue:#1565C0;--blue-mid:#1976D2;--blue-lt:#42A5F5;--blue-pale:#E3F2FD;
@@ -23,8 +23,15 @@
   --f:'Nunito',sans-serif;--fb:'Nunito Sans',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#D0DCF0;font-family:var(--fb);-webkit-font-smoothing:antialiased}
-#app{max-width:390px;margin:0 auto;height:100dvh;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(0,0,0,.22)}
+html,body{height:100%;background:var(--bg);font-family:var(--fb);-webkit-font-smoothing:antialiased}
+#app{width:100%;max-width:100%;margin:0 auto;height:100dvh;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:768px){
+  html,body{background:#D0DCF0}
+  #app{max-width:480px;box-shadow:0 0 60px rgba(0,0,0,.22);border-radius:0}
+}
+@media(min-width:1024px){
+  #app{max-width:520px}
+}
 
 /* ── SCREENS ── */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;overflow:hidden;z-index:1}
@@ -498,6 +505,42 @@ body.dark --bdr:#374151;
 #toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:#1A1A2E;color:#fff;font-family:var(--f);font-size:13px;font-weight:700;padding:10px 18px;border-radius:25px;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* ── RESPONSIVE ADJUSTMENTS ── */
+@media(max-width:360px){
+  .home-sgrid{grid-template-columns:1fr 1fr;gap:8px}
+  .stgrid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .home-scard{padding:12px 10px 14px}
+  .home-scard-name{font-size:12px}
+  .feat-banner{padding:14px}
+  .page-hdr{padding:10px 12px}
+  .home-hdr{padding:0 14px 20px}
+  .home-scroll{padding:14px 14px 88px}
+  .acct-stats{gap:0}
+  .acct-stat{padding:8px 4px}
+  .acct-stat-n{font-size:18px}
+}
+@media(min-width:400px){
+  .stgrid{grid-template-columns:repeat(3,1fr)}
+}
+@media(min-width:480px){
+  .home-sgrid{gap:14px}
+  .home-scard{padding:18px 16px 20px}
+  .stgrid{gap:12px}
+}
+/* Fix overflow issues */
+.scrollable,.home-scroll,.hist-scroll,.curr-scroll,.acct-scroll,.auth-body{
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.topics-row,.qchips{
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.msgs{overflow-x:hidden}
+.bub{max-width:100%;word-wrap:break-word;overflow-wrap:break-word}
+.md-pre{max-width:100%;overflow-x:auto}
+.md-table-wrap{max-width:100%}
+
 /* ── SVG DEFS hidden ── */
 </style>
 </head>
@@ -649,7 +692,7 @@ body.dark --bdr:#374151;
 <!-- ══ AUTH ══ -->
 <div class="screen hidden" id="sc-auth">
   <div class="auth-hero">
-    <div class="auth-logo">EduAI <span>2026 WAEC SSCE Tutor</span></div>
+    <div class="auth-logo">Eduai <span>2026 WAEC SSCE Tutor</span></div>
     <div class="auth-hero-sub">Join over 50,000 SS3 students preparing smarter for WAEC 2026. Free forever.</div>
   </div>
   <div class="auth-tabs">
@@ -862,11 +905,40 @@ body.dark --bdr:#374151;
 
 <!-- ══ SETTINGS ══ -->
 <div class="screen hidden" id="sc-settings">
-  <div class="page-hdr" style="background:var(--blue-g);border:none">
-    <button class="back-btn" style="background:rgba(255,255,255,.18)" onclick="App.go('account')"><svg viewBox="0 0 24 24" style="stroke:#fff"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <span class="page-ttl" style="color:#fff">Settings</span>
+  <div class="acct-hdr" style="padding-bottom:20px">
+    <div class="page-hdr" style="background:transparent;border:none;padding:10px 0 12px">
+      <button class="back-btn" style="background:rgba(255,255,255,.18)" onclick="App.go('home')"><svg viewBox="0 0 24 24" style="stroke:#fff"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="page-ttl" style="color:#fff">Settings</span>
+    </div>
+    <div class="acct-avatar-wrap"><div class="acct-avatar" id="sett-av"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div>
+    <div class="acct-name" id="sett-name">Student</div>
+    <div class="acct-email" id="sett-email">-</div>
+    <div class="acct-stats">
+      <div class="acct-stat"><div class="acct-stat-n" id="sett-stat-sessions">0</div><div class="acct-stat-l">Sessions</div></div>
+      <div class="acct-stat"><div class="acct-stat-n" id="sett-stat-questions">0</div><div class="acct-stat-l">Questions</div></div>
+      <div class="acct-stat"><div class="acct-stat-n" id="sett-stat-subjects">0</div><div class="acct-stat-l">Subjects</div></div>
+    </div>
   </div>
   <div class="scrollable" style="padding:0 14px 88px">
+
+    <div class="sett-section-ttl">Learning</div>
+    <div class="sett-section">
+      <div class="sett-row" onclick="App.go('curriculum')" style="cursor:pointer">
+        <div class="sett-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ico-lit"/></svg></div>
+        <div class="sett-info"><div class="sett-name">WAEC Syllabus Browser</div><div class="sett-sub">View all 15 subjects & topics</div></div>
+        <div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="sett-row" onclick="App.go('history')" style="cursor:pointer">
+        <div class="sett-ico" style="background:#E8F5E9"><svg style="stroke:#2E7D32" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="sett-info"><div class="sett-name">Chat History</div><div class="sett-sub">Review your previous sessions</div></div>
+        <div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="sett-row" onclick="App.go('subjects')" style="cursor:pointer">
+        <div class="sett-ico" style="background:#F3E5F5"><svg style="stroke:#6A1B9A" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ico-physics"/></svg></div>
+        <div class="sett-info"><div class="sett-name">Change Subject</div><div class="sett-sub">Switch to a different WAEC subject</div></div>
+        <div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
 
     <div class="sett-section-ttl">Appearance</div>
     <div class="sett-section">
@@ -983,37 +1055,16 @@ body.dark --bdr:#374151;
         <div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ══ ACCOUNT ══ -->
-<div class="screen hidden" id="sc-account">
-  <div class="acct-hdr">
-    <div class="page-hdr" style="background:transparent;border:none;padding:10px 0 12px">
-      <button class="back-btn" style="background:rgba(255,255,255,.18)" onclick="App.go('home')"><svg viewBox="0 0 24 24" style="stroke:#fff"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <span class="page-ttl" style="color:#fff">My Account</span>
+    <div class="sett-section-ttl">About</div>
+    <div class="sett-section">
+      <div class="sett-row">
+        <div class="sett-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="sett-info"><div class="sett-name">App Version</div><div class="sett-sub">Eduai WAEC 2026 v3.0</div></div>
+      </div>
     </div>
-    <div class="acct-avatar-wrap"><div class="acct-avatar" id="acct-av"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div>
-    <div class="acct-name" id="acct-name">Student</div>
-    <div class="acct-email" id="acct-email">—</div>
-    <div class="acct-stats">
-      <div class="acct-stat"><div class="acct-stat-n" id="stat-sessions">0</div><div class="acct-stat-l">Sessions</div></div>
-      <div class="acct-stat"><div class="acct-stat-n" id="stat-questions">0</div><div class="acct-stat-l">Questions</div></div>
-      <div class="acct-stat"><div class="acct-stat-n" id="stat-subjects">0</div><div class="acct-stat-l">Subjects</div></div>
-    </div>
-  </div>
-  <div class="acct-scroll">
-    <div class="acct-section-ttl">Learning</div>
-    <div class="acct-row" onclick="App.go('curriculum')"><div class="acct-row-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ico-lit"/></svg></div><div class="acct-row-info"><div class="acct-row-name">WAEC Syllabus Browser</div><div class="acct-row-sub">View all 15 subjects & topics</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    <div class="acct-row" onclick="App.go('history')"><div class="acct-row-ico" style="background:#E8F5E9"><svg style="stroke:#2E7D32" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="acct-row-info"><div class="acct-row-name">Chat History</div><div class="acct-row-sub">Review your previous sessions</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    <div class="acct-section-ttl">Preferences</div>
-    <div class="acct-row"><div class="acct-row-ico" style="background:#FFF3E0"><svg style="stroke:#E65100" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21.9 9.5"/><path d="M21.9 14.5a10 10 0 0 1-2.83 4.57"/><path d="M4.93 19.07A10 10 0 0 1 2.1 14.5"/><path d="M2.1 9.5a10 10 0 0 1 2.83-4.57"/></svg></div><div class="acct-row-info"><div class="acct-row-name">SMS / Low-Data Mode</div><div class="acct-row-sub" id="acct-sms-label">Currently: Full Mode</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    <div class="acct-row" onclick="App.go('subjects')"><div class="acct-row-ico" style="background:#F3E5F5"><svg style="stroke:#6A1B9A" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ico-physics"/></svg></div><div class="acct-row-info"><div class="acct-row-name">Change Subject</div><div class="acct-row-sub">Switch to a different WAEC subject</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    <div class="acct-section-ttl">About</div>
-    <div class="acct-row"><div class="acct-row-ico" style="background:#E3F2FD"><svg style="stroke:var(--blue)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="acct-row-info"><div class="acct-row-name">App Version</div><div class="acct-row-sub">EduAI WAEC 2026 v2.0</div></div></div>
-    <div class="acct-section-ttl">App</div>
-    <div class="acct-row" onclick="App.go('settings')"><div class="acct-row-ico" style="background:#E8EAF6"><svg style="stroke:#3F51B5;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21.9 9.5"/><path d="M21.9 14.5a10 10 0 0 1-2.83 4.57"/><path d="M4.93 19.07A10 10 0 0 1 2.1 14.5"/><path d="M2.1 9.5a10 10 0 0 1 2.83-4.57"/></svg></div><div class="acct-row-info"><div class="acct-row-name">Settings</div><div class="acct-row-sub">Theme, font, API key, quiz settings</div></div><div class="acct-row-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    <button class="logout-btn" onclick="Auth.logout()">Log Out</button>
+
+    <button class="logout-btn" onclick="Auth.logout()" style="margin-top:12px;margin-bottom:24px">Log Out</button>
   </div>
 </div>
 
@@ -1615,6 +1666,20 @@ const Settings = (() => {
 
   const open = () => {
     const s = get();
+    // Populate profile info
+    const user = Store.get('ea_user');
+    if (user) {
+      document.getElementById('sett-name').textContent = user.name || 'Student';
+      document.getElementById('sett-email').textContent = user.email || '-';
+      document.getElementById('sett-av').textContent = (user.name || 'S').charAt(0).toUpperCase();
+    }
+    // Update stats
+    const sessions = History.getSessions();
+    document.getElementById('sett-stat-sessions').textContent = sessions.length;
+    const totalQ = sessions.reduce((a,s) => a + (s.msgCount||0), 0);
+    document.getElementById('sett-stat-questions').textContent = totalQ;
+    const uniqueSubjs = new Set(sessions.map(s=>s.sid)).size;
+    document.getElementById('sett-stat-subjects').textContent = uniqueSubjs;
     // Sync UI state
     ['light','dark','blue','green'].forEach(t => {
       document.getElementById('theme-'+t)?.classList.toggle('active', s.theme===t);
@@ -1633,7 +1698,6 @@ const Settings = (() => {
     // API key
     const key = Store.get('ea_apikey','');
     document.getElementById('api-key-status').textContent = key ? 'Key saved ✓ — chat is ready' : 'Not set — chat will not work without this';
-    App.go('settings');
   };
 
   const setTheme = (t) => {
@@ -2036,7 +2100,7 @@ The "ans" field is the zero-based index of the correct option.`;
 
   const stopTimer = () => { if (timerInt) { clearInterval(timerInt); timerInt=null; } };
 
-  return { render, selectSubj, start, answer, finish };
+  return { render, selectSubj, showQuizHome, start, answer, finish };
 })();
 
 // ══════════════════════════════════════════════════════
@@ -2152,12 +2216,12 @@ const Dashboard = (() => {
           }];
         })
       ),
-      appInfo: { version: 'EduAI WAEC 2026 v3.0', curriculum: '2026 WAEC SSCE' }
+      appInfo: { version: 'Eduai WAEC 2026 v3.0', curriculum: '2026 WAEC SSCE' }
     };
     const blob = new Blob([JSON.stringify(report, null, 2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `EduAI_Impact_Report_${user.name||'student'}_${new Date().toISOString().slice(0,10)}.json`;
+    a.download = `Eduai_Impact_Report_${user.name||'student'}_${new Date().toISOString().slice(0,10)}.json`;
     a.click();
     toast('Impact report downloaded');
   };
@@ -2186,6 +2250,31 @@ const App = (() => {
     Store.set('ea_q', queue);
   };
 
+  const checkRealConnectivity = async () => {
+    if (!navigator.onLine) return false;
+    try {
+      // Try a lightweight fetch to verify actual connectivity
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'HEAD',
+        signal: controller.signal,
+        mode: 'no-cors'
+      }).catch(() => null);
+      clearTimeout(timeoutId);
+      return true; // If fetch completes without network error, we have connectivity
+    } catch(e) {
+      return false;
+    }
+  };
+
+  const updateOnlineStatus = async () => {
+    const wasOnline = online;
+    online = await checkRealConnectivity();
+    dots();
+    if (!wasOnline && online && queue.length) flush();
+  };
+
   const init = () => {
     ld();
     // Check if already logged in
@@ -2198,10 +2287,12 @@ const App = (() => {
       if (seen) { go('auth'); } else { go('onboard'); }
     }
     Settings.init();
-    // Connectivity
-    window.addEventListener('online',  () => { online=true;  dots(); if(queue.length) flush(); });
+    // Connectivity - check real connectivity, not just navigator.onLine
+    window.addEventListener('online',  () => updateOnlineStatus());
     window.addEventListener('offline', () => { online=false; dots(); });
-    dots();
+    // Initial check and periodic re-check
+    updateOnlineStatus();
+    setInterval(updateOnlineStatus, 30000); // Re-check every 30 seconds
     // Input auto-resize
     const qi = document.getElementById('qi');
     qi.addEventListener('input', () => { qi.style.height='auto'; qi.style.height=Math.min(qi.scrollHeight,108)+'px'; });
@@ -2246,7 +2337,7 @@ const App = (() => {
     const cst=document.getElementById('cst'); if(cst) cst.textContent=online?'Online · AI active':'Offline · responses cached';
   };
 
-  const SCREEN_ORDER = ['onboard','auth','home','subjects','curriculum','history','quiz','dashboard','settings','chat','account'];
+  const SCREEN_ORDER = ['onboard','auth','home','subjects','curriculum','history','quiz','dashboard','settings','chat'];
   const go = (name) => {
     const ti = SCREEN_ORDER.indexOf(name);
     document.querySelectorAll('.screen').forEach(el => {
@@ -2256,7 +2347,7 @@ const App = (() => {
       if (sid !== name) el.classList.add(si < ti ? 'back-out' : 'hidden');
     });
     const bn = document.getElementById('bnav');
-    if (bn) bn.classList.toggle('hidden', !['home','subjects','curriculum','history','quiz','dashboard','account','settings'].includes(name));
+    if (bn) bn.classList.toggle('hidden', !['home','subjects','curriculum','history','quiz','dashboard','settings'].includes(name));
     cur = name;
     // Trigger renders on navigation
     if (name === 'history')   { History.render(); updateStats(); }
@@ -2264,7 +2355,6 @@ const App = (() => {
     if (name === 'quiz')       Quiz.render();
     if (name === 'dashboard')  Dashboard.render();
     if (name === 'settings')   Settings.open();
-    if (name === 'account')    updateStats();
   };
 
   const nav = (btn, dest) => {
@@ -2413,7 +2503,16 @@ const App = (() => {
     addMsg('user', text);
     hist.push({role:'user', content:text});
     Store.set('ea_q', queue);
-    if (!online) { enq(text); return; }
+    // Re-check connectivity before sending
+    const isReallyOnline = navigator.onLine && await checkRealConnectivity();
+    if (!isReallyOnline) { 
+      online = false; 
+      dots(); 
+      enq(text); 
+      return; 
+    }
+    online = true;
+    dots();
     await fetchAnswer(text);
   };
 
@@ -2424,7 +2523,7 @@ const App = (() => {
     try {
       const sys = curMode==='sms'
         ? `You are a concise WAEC 2026 SSCE tutor for ${sel.name}. SMS MODE: max 200 chars plain text. No LaTeX. Only key WAEC syllabus facts.`
-        : `You are EduAI, an expert WAEC 2026 SSCE tutor for Nigerian SS3 students studying ${sel.name}.
+        : `You are Eduai, an expert WAEC 2026 SSCE tutor for Nigerian SS3 students studying ${sel.name}.
 
 WAEC EXAM CONTEXT:
 ${WAEC_EXAM_KB}
@@ -2485,7 +2584,17 @@ FORMAT:
       cache[k]=ans; hist.push({role:'assistant',content:ans});
       sv(); saveSess();
     } catch(e) {
-      hideT(); enq(q);
+      hideT();
+      // Check if it's a network error vs API error
+      if (e.message.includes('timeout') || e.message.includes('network') || e.message.includes('Failed to fetch')) {
+        // Network issue - queue the question
+        online = false;
+        dots();
+        enq(q);
+      } else {
+        // API error - show message to user
+        addMsg('ai', `**Error:** ${e.message || 'Something went wrong. Please try again.'}\n\nIf the problem persists, check your API key in Settings.`);
+      }
     }
     waiting=false; document.getElementById('sbtn').disabled=false;
   };
